@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -8,7 +9,7 @@
 <meta property="og:title" content="Jane Yates — Cyanotypes">
 <meta property="og:description" content="Blueprints of Technology: cyanotype impressions of old computer parts. Original artworks by Jane Yates.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="images/art-01.jpg">
+<meta property="og:image" content="art-01.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -34,7 +35,6 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--cyan);color:var(--ink)}
-
 /* ---------- header ---------- */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:50;
@@ -51,7 +51,6 @@ nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
   letter-spacing:.22em;text-transform:uppercase;transition:color .3s}
 nav a:hover,nav a:focus{color:#fff}
 @media(max-width:640px){nav ul{gap:18px} nav{padding:16px 5vw}}
-
 /* ---------- hero ---------- */
 .hero{
   min-height:100svh;display:flex;flex-direction:column;
@@ -84,7 +83,6 @@ nav a:hover,nav a:focus{color:#fff}
   animation:drift 2.6s ease-in-out infinite;
 }
 @keyframes drift{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
-
 /* ---------- sections ---------- */
 section{padding:110px 6vw}
 .section-head{
@@ -93,7 +91,6 @@ section{padding:110px 6vw}
 }
 .rule{width:64px;height:1px;background:var(--cyan);margin:0 0 44px;border:0}
 .lede{max-width:640px;color:var(--paper-dim);font-size:1.02rem}
-
 /* ---------- gallery ---------- */
 #work{padding-top:90px}
 .grid{
@@ -128,7 +125,6 @@ figure.piece:nth-child(3n+2){margin-top:46px}
   color:var(--paper-dim);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
   border:1px dashed rgba(169,184,206,.35);text-align:center;padding:20px;
 }
-
 /* ---------- about ---------- */
 #about{background:var(--ink2)}
 .about-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:70px;max-width:1150px;margin:0 auto}
@@ -140,7 +136,6 @@ figure.piece:nth-child(3n+2){margin-top:46px}
 }
 .fact .f-t{font-family:var(--serif);font-size:1.25rem;color:var(--paper)}
 .fact .f-d{font-size:.85rem;color:var(--paper-dim)}
-
 /* ---------- process strip ---------- */
 #process{text-align:center}
 #process .lede{margin:0 auto}
@@ -152,7 +147,6 @@ figure.piece:nth-child(3n+2){margin-top:46px}
 .step h3{font-weight:400;font-size:.85rem;letter-spacing:.26em;
   text-transform:uppercase;margin:8px 0 10px}
 .step p{font-size:.86rem;color:var(--paper-dim)}
-
 /* ---------- contact ---------- */
 #contact{text-align:center;padding-bottom:70px}
 #contact .section-head{margin-bottom:8px}
@@ -169,7 +163,6 @@ footer{
 }
 footer a{color:var(--paper-dim)}
 footer a:hover{color:var(--paper)}
-
 /* ---------- lightbox ---------- */
 .lb{
   position:fixed;inset:0;z-index:100;background:rgba(4,10,24,.96);
@@ -190,7 +183,6 @@ footer a:hover{color:var(--paper)}
 .lb .x{top:16px;right:20px}
 .lb .prev{left:8px;top:50%;transform:translateY(-50%)}
 .lb .next{right:8px;top:50%;transform:translateY(-50%)}
-
 @media (prefers-reduced-motion: reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
@@ -199,7 +191,6 @@ footer a:hover{color:var(--paper)}
 </style>
 </head>
 <body>
-
 <nav aria-label="Main">
   <a class="wordmark" href="#top">Jane Yates</a>
   <ul>
@@ -208,14 +199,12 @@ footer a:hover{color:var(--paper)}
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
-
 <header class="hero" id="top">
   <h1>Jane&nbsp;Yates</h1>
   <p class="sub">Blueprints of Technology — cyanotypes of the machines we leave behind</p>
   <p class="kicker">Commissioned by the Oxford Internet Institute · University of Oxford</p>
   <a class="down" href="#work" aria-label="Scroll to gallery">↓</a>
 </header>
-
 <main>
 <section id="work">
   <h2 class="section-head">The Work</h2>
@@ -223,7 +212,6 @@ footer a:hover{color:var(--paper)}
   <p class="lede">Obsolete computer components — circuit boards, cooling fans, heatsinks, phone shells, 35mm slides — laid on hand-coated paper and exposed to light. Each print is unique. Click any piece to view it larger.</p>
   <div class="grid" id="grid"></div>
 </section>
-
 <section id="about">
   <div class="about-wrap">
     <div>
@@ -253,7 +241,6 @@ footer a:hover{color:var(--paper)}
     </div>
   </div>
 </section>
-
 <section id="process">
   <h2 class="section-head">The Cyanotype Process</h2>
   <hr class="rule" style="margin-left:auto;margin-right:auto">
@@ -265,7 +252,6 @@ footer a:hover{color:var(--paper)}
     <div class="step"><div class="num">iv</div><h3>Wash</h3><p>Rinsing in water reveals the deep Prussian blue. No two prints are ever the same.</p></div>
   </div>
 </section>
-
 <section id="contact">
   <h2 class="section-head">Enquiries</h2>
   <hr class="rule" style="margin-left:auto;margin-right:auto">
@@ -273,13 +259,11 @@ footer a:hover{color:var(--paper)}
   <a class="btn" href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Get in touch</a>
 </section>
 </main>
-
 <footer>
   © <span id="yr"></span> Jane Yates · Uplyme, Dorset ·
   <a href="mailto:janeyatestheartist@gmail.com">janeyatestheartist@gmail.com</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
 </footer>
-
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Artwork viewer">
   <button class="x" aria-label="Close">×</button>
   <button class="prev" aria-label="Previous artwork">‹</button>
@@ -288,7 +272,6 @@ footer a:hover{color:var(--paper)}
   <div class="lb-sub" id="lb-sub"></div>
   <button class="next" aria-label="Next artwork">›</button>
 </div>
-
 <script>
 /* ------- EDIT YOUR ARTWORK LIST HERE -------
    file  = image filename inside the images/ folder
@@ -320,15 +303,14 @@ const works = [
  {file:"art-23.jpg", title:"Blueprints, Framed",    alt:"A framed cyanotype of computer fans and parts, photographed on a wooden floor"},
 ];
 /* ------------------------------------------- */
-
 const grid = document.getElementById('grid');
 works.forEach((w,i)=>{
   const fig = document.createElement('figure');
   fig.className = 'piece';
   fig.innerHTML = `
     <div class="frame">
-      <img src="images/${w.file}" alt="${w.alt}" loading="lazy"
-           onerror="this.outerHTML='<div class=missing>${w.file}<br>add this photo to the images folder</div>'">
+      <img src="${w.file}" alt="${w.alt}" loading="lazy"
+           onerror="this.outerHTML='<div class=missing>${w.file}<br>add this photo to the site folder</div>'">
     </div>
     <figcaption>
       <span class="t">${w.title}</span>
@@ -339,13 +321,11 @@ works.forEach((w,i)=>{
   fig.addEventListener('keydown',e=>{if(e.key==='Enter')openLb(i)});
   grid.appendChild(fig);
 });
-
 /* reveal on scroll */
 const io = new IntersectionObserver(es=>es.forEach(e=>{
   if(e.isIntersecting){e.target.classList.add('seen');io.unobserve(e.target)}
 }),{threshold:.12});
 document.querySelectorAll('.piece').forEach(p=>io.observe(p));
-
 /* lightbox */
 const lb=document.getElementById('lb'),lbImg=document.getElementById('lb-img'),
       lbCap=document.getElementById('lb-cap'),lbSub=document.getElementById('lb-sub');
@@ -354,7 +334,7 @@ function openLb(i){cur=i;render();lb.classList.add('open');document.body.style.o
 function closeLb(){lb.classList.remove('open');document.body.style.overflow=''}
 function render(){
   const w=works[cur];
-  lbImg.src='images/'+w.file; lbImg.alt=w.alt;
+  lbImg.src=w.file; lbImg.alt=w.alt;
   lbCap.textContent=w.title;
   lbSub.textContent='No. '+String(cur+1).padStart(2,'0')+' · Blueprints of Technology';
 }
@@ -369,7 +349,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')step(-1);
   if(e.key==='ArrowRight')step(1);
 });
-
 document.getElementById('yr').textContent=new Date().getFullYear();
 </script>
 </body>
