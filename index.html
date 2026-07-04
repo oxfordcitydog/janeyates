@@ -12,7 +12,7 @@
 <meta property="og:image" content="art-01.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#08142e;          /* deepest prussian */
@@ -57,25 +57,53 @@ nav a:hover,nav a:focus{color:#fff}
   justify-content:center;align-items:center;text-align:center;
   padding:0 6vw;position:relative;overflow:hidden;
 }
-.hero::before{ /* radial glow like an exposure */
+.hero::before{ /* the cyanotype print itself, tinted to the site's ink blue, with the original glow screened on top */
   content:"";position:absolute;inset:-20%;
-  background:
-    radial-gradient(ellipse 60% 45% at 50% 42%,rgba(127,180,216,.16),transparent 65%),
-    radial-gradient(ellipse 90% 70% at 50% 110%,rgba(22,48,94,.9),transparent 70%);
+  background-image:
+    radial-gradient(ellipse 60% 45% at 50% 42%,rgba(127,180,216,.20),transparent 65%),
+    linear-gradient(var(--ink),var(--ink)),
+    url("hero-bg.jpg");
+  background-blend-mode:screen,color,normal;
+  background-size:auto,cover,cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  filter:contrast(1.08) brightness(.82);
   pointer-events:none;
 }
-.hero h1{
-  font-family:var(--serif);font-weight:500;
-  font-size:clamp(3rem,11vw,8.5rem);
-  letter-spacing:.06em;line-height:1.02;position:relative;
+/* the big word: plain paper-white by default */
+.hero-word{
+  position:relative;
+  font-family:var(--sans);font-weight:900;
+  font-size:clamp(2.75rem,11.5vw,10rem);
+  letter-spacing:.01em;line-height:.92;
+  --mx:50%;--my:50%;
 }
+.hw-base{display:block;color:var(--paper)}
+/* a second copy of the word, image-filled, revealed only in a spotlight that follows the cursor */
+.hw-reveal{
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--cyan),var(--cyan)),url("hero-bg.jpg");
+  background-blend-mode:color;
+  background-size:cover;background-position:center;background-attachment:fixed;
+  filter:saturate(1.3) contrast(1.15) brightness(1.35);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  -webkit-mask-image:radial-gradient(circle 160px at var(--mx) var(--my),#000 55%,transparent 100%);
+  mask-image:radial-gradient(circle 160px at var(--mx) var(--my),#000 55%,transparent 100%);
+  pointer-events:none;opacity:0;transition:opacity .25s ease;
+}
+.hero-word.is-active .hw-reveal{opacity:1}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 .hero .sub{
   margin-top:26px;font-family:var(--serif);font-style:italic;
   font-size:clamp(1.1rem,2.6vw,1.7rem);color:var(--cyan);position:relative;
+  text-shadow:0 2px 16px rgba(4,10,24,.75);
 }
 .hero .kicker{
   margin-top:18px;font-size:.8rem;letter-spacing:.34em;text-transform:uppercase;
   color:var(--paper-dim);position:relative;
+  text-shadow:0 2px 16px rgba(4,10,24,.75);
 }
 .hero .down{
   position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
@@ -83,6 +111,13 @@ nav a:hover,nav a:focus{color:#fff}
   animation:drift 2.6s ease-in-out infinite;
 }
 @keyframes drift{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
+@media(max-width:640px){
+  .hero::before{background-attachment:scroll;background-image:
+    radial-gradient(ellipse 60% 45% at 50% 42%,rgba(127,180,216,.20),transparent 65%),
+    linear-gradient(var(--ink),var(--ink)),
+    url("hero-bg-mobile.jpg");}
+  .hw-reveal{display:none} /* no hover on touch — keep it plain and legible */
+}
 /* ---------- sections ---------- */
 section{padding:110px 6vw}
 .section-head{
@@ -200,7 +235,11 @@ footer a:hover{color:var(--paper)}
   </ul>
 </nav>
 <header class="hero" id="top">
-  <h1>Jane&nbsp;Yates</h1>
+  <h1 class="hero-word">
+    <span class="hw-base" aria-hidden="true">CYANOTYPES</span>
+    <span class="hw-reveal" aria-hidden="true">CYANOTYPES</span>
+    <span class="sr-only">Jane Yates — Cyanotypes</span>
+  </h1>
   <p class="sub">Blueprints of Technology — cyanotypes of the machines we leave behind</p>
   <p class="kicker">Commissioned by the Oxford Internet Institute · University of Oxford</p>
   <a class="down" href="#work" aria-label="Scroll to gallery">↓</a>
@@ -350,6 +389,18 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight')step(1);
 });
 document.getElementById('yr').textContent=new Date().getFullYear();
+/* hero word: cursor-follow spotlight reveal (desktop/mouse only) */
+const heroWord=document.querySelector('.hero-word');
+if(heroWord && window.matchMedia('(hover: hover) and (pointer: fine)').matches){
+  const setSpot=(x,y)=>{
+    const r=heroWord.getBoundingClientRect();
+    heroWord.style.setProperty('--mx',(x-r.left)+'px');
+    heroWord.style.setProperty('--my',(y-r.top)+'px');
+  };
+  heroWord.addEventListener('pointerenter',()=>heroWord.classList.add('is-active'));
+  heroWord.addEventListener('pointermove',e=>setSpot(e.clientX,e.clientY));
+  heroWord.addEventListener('pointerleave',()=>heroWord.classList.remove('is-active'));
+}
 </script>
 </body>
 </html>
