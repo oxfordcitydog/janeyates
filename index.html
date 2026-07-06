@@ -202,26 +202,7 @@ footer{
 }
 footer a{color:var(--paper-dim)}
 footer a:hover{color:var(--paper)}
-/* ---------- lightbox ---------- */
-.lb{
-  position:fixed;inset:0;z-index:100;background:rgba(4,10,24,.96);
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-  padding:4vh 4vw;
-}
-.lb.open{display:flex}
-.lb img{max-width:92vw;max-height:80vh;box-shadow:0 30px 90px rgba(0,0,0,.9)}
-.lb .lb-cap{margin-top:18px;font-family:var(--serif);font-size:1.2rem;text-align:center}
-.lb .lb-sub{font-size:.75rem;letter-spacing:.22em;color:var(--paper-dim);
-  text-transform:uppercase;margin-top:4px;text-align:center}
-.lb button{
-  position:absolute;background:none;border:none;color:var(--paper);
-  font-size:2.2rem;cursor:pointer;padding:14px;line-height:1;opacity:.75;
-  transition:opacity .25s;
-}
-.lb button:hover{opacity:1}
-.lb .x{top:16px;right:20px}
-.lb .prev{left:8px;top:50%;transform:translateY(-50%)}
-.lb .next{right:8px;top:50%;transform:translateY(-50%)}
+.piece a{color:inherit;text-decoration:none;display:block}
 @media (prefers-reduced-motion: reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
@@ -251,7 +232,7 @@ footer a:hover{color:var(--paper)}
 <section id="work">
   <h2 class="section-head">The Work</h2>
   <hr class="rule">
-  <p class="lede">Obsolete computer components — circuit boards, cooling fans, heatsinks, phone shells, 35mm slides — laid on hand-coated paper and exposed to light. Each print is unique. Click any piece to view it larger.</p>
+  <p class="lede">Obsolete computer components — circuit boards, cooling fans, heatsinks, phone shells, 35mm slides — laid on hand-coated paper and exposed to light. Each print is unique. Click any piece for its full details, measurements and price.</p>
   <div class="grid" id="grid"></div>
 </section>
 <section id="about">
@@ -309,14 +290,6 @@ footer a:hover{color:var(--paper)}
   <a href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Contact</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
 </footer>
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Artwork viewer">
-  <button class="x" aria-label="Close">×</button>
-  <button class="prev" aria-label="Previous artwork">‹</button>
-  <img id="lb-img" src="" alt="">
-  <div class="lb-cap" id="lb-cap"></div>
-  <div class="lb-sub" id="lb-sub"></div>
-  <button class="next" aria-label="Next artwork">›</button>
-</div>
 <script>
 /* ------- EDIT YOUR ARTWORK LIST HERE -------
    file  = image filename inside the images/ folder
@@ -353,17 +326,16 @@ works.forEach((w,i)=>{
   const fig = document.createElement('figure');
   fig.className = 'piece';
   fig.innerHTML = `
-    <div class="frame">
-      <img src="${w.file}" alt="${w.alt}" loading="lazy"
-           onerror="this.outerHTML='<div class=missing>${w.file}<br>add this photo to the site folder</div>'">
-    </div>
-    <figcaption>
-      <span class="t">${w.title}</span>
-      <span class="n">No. ${String(i+1).padStart(2,'0')} · Unique print</span>
-    </figcaption>`;
-  fig.addEventListener('click',()=>openLb(i));
-  fig.tabIndex = 0;
-  fig.addEventListener('keydown',e=>{if(e.key==='Enter')openLb(i)});
+    <a href="cyanotypejane${i+1}.html">
+      <div class="frame">
+        <img src="${w.file}" alt="${w.alt}" loading="lazy"
+             onerror="this.outerHTML='<div class=missing>${w.file}<br>add this photo to the site folder</div>'">
+      </div>
+      <figcaption>
+        <span class="t">${w.title}</span>
+        <span class="n">No. ${String(i+1).padStart(2,'0')} · Unique print</span>
+      </figcaption>
+    </a>`;
   grid.appendChild(fig);
 });
 /* reveal on scroll */
@@ -371,29 +343,6 @@ const io = new IntersectionObserver(es=>es.forEach(e=>{
   if(e.isIntersecting){e.target.classList.add('seen');io.unobserve(e.target)}
 }),{threshold:.12});
 document.querySelectorAll('.piece').forEach(p=>io.observe(p));
-/* lightbox */
-const lb=document.getElementById('lb'),lbImg=document.getElementById('lb-img'),
-      lbCap=document.getElementById('lb-cap'),lbSub=document.getElementById('lb-sub');
-let cur=0;
-function openLb(i){cur=i;render();lb.classList.add('open');document.body.style.overflow='hidden'}
-function closeLb(){lb.classList.remove('open');document.body.style.overflow=''}
-function render(){
-  const w=works[cur];
-  lbImg.src=w.file; lbImg.alt=w.alt;
-  lbCap.textContent=w.title;
-  lbSub.textContent='No. '+String(cur+1).padStart(2,'0')+' · Blueprints of Technology';
-}
-function step(d){cur=(cur+d+works.length)%works.length;render()}
-lb.querySelector('.x').addEventListener('click',closeLb);
-lb.querySelector('.prev').addEventListener('click',e=>{e.stopPropagation();step(-1)});
-lb.querySelector('.next').addEventListener('click',e=>{e.stopPropagation();step(1)});
-lb.addEventListener('click',e=>{if(e.target===lb)closeLb()});
-document.addEventListener('keydown',e=>{
-  if(!lb.classList.contains('open'))return;
-  if(e.key==='Escape')closeLb();
-  if(e.key==='ArrowLeft')step(-1);
-  if(e.key==='ArrowRight')step(1);
-});
 document.getElementById('yr').textContent=new Date().getFullYear();
 /* hero word: cursor-follow spotlight reveal (desktop/mouse only) */
 const heroWord=document.querySelector('.hero-word');

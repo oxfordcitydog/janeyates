@@ -1,1 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gear and Handset · No. 10 — Jane Yates Cyanotypes</title>
+<meta name="description" content="Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable">
+<meta property="og:title" content="Gear and Handset — Jane Yates Cyanotypes">
+<meta property="og:description" content="Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable">
+<meta property="og:type" content="website">
+<meta property="og:image" content="jane10.jpg">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="icon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#08142e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08142e;
+  --ink2:#0d1f42;
+  --ink3:#16305e;
+  --paper:#e9eef5;
+  --paper-dim:#a9b8ce;
+  --cyan:#7fb4d8;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--cyan);color:var(--ink)}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 5vw;
+  background:linear-gradient(to bottom,rgba(8,20,46,.92),rgba(8,20,46,0));
+}
+nav .wordmark{
+  font-family:var(--serif);font-size:1.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--paper);text-decoration:none;
+}
+nav ul{display:flex;gap:34px;list-style:none}
+nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
+  letter-spacing:.22em;text-transform:uppercase;transition:color .3s}
+nav a:hover,nav a:focus{color:#fff}
+@media(max-width:640px){nav ul{gap:18px} nav{padding:16px 5vw}}
+.btn{
+  display:inline-block;border:1px solid var(--cyan);color:var(--paper);
+  text-decoration:none;letter-spacing:.24em;text-transform:uppercase;
+  font-size:.78rem;padding:17px 44px;transition:background .35s,color .35s;
+}
+.btn:hover,.btn:focus{background:var(--cyan);color:var(--ink)}
+footer{
+  padding:40px 6vw 50px;text-align:center;color:var(--paper-dim);
+  font-size:.78rem;letter-spacing:.06em;
+}
+footer a{color:var(--paper-dim)}
+footer a:hover{color:var(--paper)}
+/* ---------- detail page ---------- */
+.detail{padding:140px 6vw 90px}
+.back-link{
+  display:inline-block;margin-bottom:44px;color:var(--paper-dim);
+  text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
+  transition:color .3s;
+}
+.back-link:hover{color:var(--paper)}
+.detail-wrap{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:6vw;
+  max-width:1200px;margin:0 auto;align-items:start;
+}
+@media(max-width:860px){.detail-wrap{grid-template-columns:1fr;gap:40px}}
+.detail-frame{background:var(--ink2);overflow:hidden;box-shadow:0 24px 60px -28px rgba(0,0,0,.85)}
+.detail-frame img{width:100%;display:block}
+.d-num{font-size:.75rem;letter-spacing:.24em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:12px}
+.d-title{font-family:var(--serif);font-weight:500;font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:20px}
+.d-desc{color:var(--paper-dim);margin-bottom:40px;max-width:48ch}
+.d-meta{margin-bottom:40px}
+.d-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:24px;
+  padding:16px 0;border-top:1px solid rgba(169,184,206,.18);
+}
+.d-row:last-child{border-bottom:1px solid rgba(169,184,206,.18)}
+.d-label{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim);white-space:nowrap}
+.d-value{font-family:var(--serif);font-size:1.15rem;text-align:right}
+.ship-note{display:block;font-family:var(--sans);font-size:.7rem;letter-spacing:.04em;color:var(--paper-dim);margin-top:3px}
+.badge{
+  display:inline-block;padding:5px 16px;border:1px solid var(--cyan);border-radius:999px;
+  font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+}
+.badge.sold,.badge.private{border-color:var(--paper-dim);color:var(--paper-dim)}
+.piece-nav{
+  max-width:1200px;margin:70px auto 0;display:flex;justify-content:space-between;
+  border-top:1px solid rgba(169,184,206,.18);padding-top:30px;
+}
+.piece-nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
+  letter-spacing:.18em;text-transform:uppercase;transition:color .3s}
+.piece-nav a:hover{color:#fff}
+</style>
+</head>
+<body>
+<nav aria-label="Main">
+  <a class="wordmark" href="index.html">Jane Yates</a>
+  <ul>
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+</nav>
+<main>
+<section class="detail">
+  <a class="back-link" href="index.html#work">&larr; Back to Gallery</a>
+  <div class="detail-wrap">
+    <figure class="detail-frame">
+      <img src="jane10.jpg" alt="Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable">
+    </figure>
+    <div class="detail-info">
+      <div class="d-num">No. 10 &middot; Unique print</div>
+      <h1 class="d-title">Gear and Handset</h1>
+      <p class="d-desc">Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable</p>
 
+      <!--
+        EDIT THIS PANEL:
+        - Measurements: replace the placeholder text below.
+        - Status: set the badge text to "For Sale", "Sold" or "Private Collection".
+          For Sold / Private Collection also add class="badge sold" or class="badge private"
+          to the <span class="badge"> tag so it appears dimmed instead of highlighted.
+        - Price: replace the placeholder amount. Shipping is noted separately underneath.
+      -->
+      <div class="d-meta">
+        <div class="d-row">
+          <span class="d-label">Measurements</span>
+          <span class="d-value">EDIT: e.g. 40 &times; 30 cm (unframed)</span>
+        </div>
+        <div class="d-row">
+          <span class="d-label">Status</span>
+          <span class="d-value"><span class="badge ">For Sale</span></span>
+        </div>
+        <div class="d-row">
+          <span class="d-label">Price</span>
+          <span class="d-value">EDIT: e.g. &pound;180<span class="ship-note">Excludes shipping</span></span>
+        </div>
+      </div>
+
+      <a class="btn" href="mailto:janeyatestheartist@gmail.com?subject=Enquiry%3A%20Gear%20and%20Handset%20(No.%2010)">Enquire</a>
+    </div>
+  </div>
+  <div class="piece-nav">
+    <a href="cyanotypejane9.html">&lsaquo; No. 09</a>
+    <a href="cyanotypejane11.html">No. 11 &rsaquo;</a>
+  </div>
+</section>
+</main>
+<footer>
+  &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
+  <a href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Contact</a><br>
+  Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
+</footer>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>
