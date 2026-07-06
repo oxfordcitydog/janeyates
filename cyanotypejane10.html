@@ -68,6 +68,9 @@ footer{
 }
 footer a{color:var(--paper-dim)}
 footer a:hover{color:var(--paper)}
+.enquire-line{font-size:.92rem;color:var(--paper-dim);margin-top:6px}
+.email-addr{font-family:var(--serif);font-size:1.2rem;color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--cyan);transition:color .3s,border-color .3s}
+.email-addr:hover{color:#fff;border-color:#fff}
 /* ---------- detail page ---------- */
 .detail{padding:140px 6vw 90px}
 .back-link{
@@ -167,8 +170,8 @@ footer a:hover{color:var(--paper)}
         </div>
       </div>
 
-      <a class="btn" href="mailto:janeyatestheartist@gmail.com?subject=Enquiry%3A%20Gear%20and%20Handset%20(No.%2010)">Enquire</a>
-      <p style="font-size:.78rem;color:var(--paper-dim);margin-top:14px">or email <a href="mailto:janeyatestheartist@gmail.com" style="color:var(--cyan)">janeyatestheartist@gmail.com</a></p>
+      <p class="enquire-line">To enquire about this piece, please email<br>
+      <a class="email-addr" href="#">&hellip;</a></p>
     </div>
   </div>
   <div class="piece-nav">
@@ -179,9 +182,19 @@ footer a:hover{color:var(--paper)}
 </main>
 <footer>
   &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
-  <a href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Contact</a><br>
+  <a href="#" class="mail-link">Contact</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
 </footer>
-<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){
+  var a='janeyatestheartist'+'\u0040'+'gmail.com';
+  var e=document.querySelector('.email-addr');
+  if(e){e.textContent=a;e.setAttribute('href','mailto:'+a+'?subject='+encodeURIComponent('Enquiry: '+document.title));}
+  document.querySelectorAll('.mail-link').forEach(function(l){
+    l.setAttribute('href','mailto:'+a+'?subject='+encodeURIComponent('Cyanotype enquiry'));
+  });
+})();
+</script>
 </body>
 </html>

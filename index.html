@@ -276,12 +276,12 @@ footer a:hover{color:var(--paper)}
   <h2 class="section-head">Enquiries</h2>
   <hr class="rule" style="margin-left:auto;margin-right:auto">
   <p class="lede">Original prints from the series are available. For prices, commissions, exhibitions or anything else, I'd love to hear from you.</p>
-  <a class="btn" href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Get in touch</a>
+  <a class="btn mail-link" href="#">Get in touch</a>
 </section>
 </main>
 <footer>
   © <span id="yr"></span> Jane Yates · Lyme Regis, UK ·
-  <a href="mailto:janeyatestheartist@gmail.com?subject=Cyanotype%20enquiry">Contact</a><br>
+  <a href="#" class="mail-link">Contact</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
 </footer>
 <script>
@@ -339,6 +339,12 @@ const io = new IntersectionObserver(es=>es.forEach(e=>{
 }),{threshold:.12});
 document.querySelectorAll('.piece').forEach(p=>io.observe(p));
 document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){
+  var a='janeyatestheartist'+'\u0040'+'gmail.com';
+  document.querySelectorAll('.mail-link').forEach(function(l){
+    l.setAttribute('href','mailto:'+a+'?subject='+encodeURIComponent('Cyanotype enquiry'));
+  });
+})();
 /* hero word: cursor-follow spotlight reveal (desktop/mouse only) */
 const heroWord=document.querySelector('.hero-word');
 if(heroWord && window.matchMedia('(hover: hover) and (pointer: fine)').matches){
