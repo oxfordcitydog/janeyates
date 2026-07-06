@@ -100,6 +100,12 @@ footer a:hover{color:var(--paper)}
   font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
 }
 .badge.sold,.badge.private{border-color:var(--paper-dim);color:var(--paper-dim)}
+.room-view{max-width:1200px;margin:80px auto 0}
+.rv-head{font-family:var(--serif);font-weight:500;font-size:1.7rem;letter-spacing:.03em;margin-bottom:4px}
+.rv-note{font-size:.8rem;color:var(--paper-dim);margin-bottom:26px}
+.room{position:relative;overflow:hidden;box-shadow:0 24px 60px -28px rgba(0,0,0,.85)}
+.room-bg{width:100%;display:block}
+.room-art{position:absolute;box-shadow:2px 5px 9px rgba(0,0,0,.4)}
 .piece-nav{
   max-width:1200px;margin:70px auto 0;display:flex;justify-content:space-between;
   border-top:1px solid rgba(169,184,206,.18);padding-top:30px;
@@ -141,7 +147,7 @@ footer a:hover{color:var(--paper)}
       <div class="d-meta">
         <div class="d-row">
           <span class="d-label">Measurements</span>
-          <span class="d-value">EDIT: e.g. 40 &times; 30 cm (unframed)</span>
+          <span class="d-value">To be confirmed (cm)</span>
         </div>
         <div class="d-row">
           <span class="d-label">Status</span>
@@ -149,11 +155,19 @@ footer a:hover{color:var(--paper)}
         </div>
         <div class="d-row">
           <span class="d-label">Price</span>
-          <span class="d-value">EDIT: e.g. &pound;180<span class="ship-note">Excludes shipping</span></span>
+          <span class="d-value">To be confirmed<span class="ship-note">Excludes shipping</span></span>
         </div>
       </div>
 
       <a class="btn" href="mailto:janeyatestheartist@gmail.com?subject=Enquiry%3A%20Plugs%20and%20Circuits%20(No.%2003)">Enquire</a>
+    </div>
+  </div>
+  <div class="room-view">
+    <h2 class="rv-head">In the Room</h2>
+    <p class="rv-note">Shown at actual A4 size (21 &times; 29.7 cm) on the wall.</p>
+    <div class="room">
+      <img class="room-bg" src="room3.png" alt="Home office with a walnut desk">
+      <img class="room-art" src="jane3.jpg" alt="" style="left:49.3%;top:24.6%;width:3.67%">
     </div>
   </div>
   <div class="piece-nav">
