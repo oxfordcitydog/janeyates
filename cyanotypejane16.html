@@ -109,6 +109,20 @@ footer a:hover{color:var(--paper)}
 .room{position:relative;overflow:hidden;box-shadow:0 24px 60px -28px rgba(0,0,0,.85)}
 .room-bg{width:100%;display:block}
 .room-art{position:absolute;box-shadow:2px 5px 9px rgba(0,0,0,.4)}
+.crumbs{margin-bottom:44px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dim)}
+.crumbs a{color:var(--paper-dim);text-decoration:none;transition:color .3s}
+.crumbs a:hover,.crumbs a:focus{color:#fff}
+.crumbs .sep{margin:0 10px;color:var(--paper-dim)}
+.crumbs .here{color:var(--paper)}
+.float-nav{position:fixed;top:50%;transform:translateY(-50%);z-index:40;
+  font-size:2.2rem;line-height:1;color:var(--paper-dim);text-decoration:none;
+  padding:16px 12px;background:rgba(8,20,46,.45);border-radius:6px;
+  transition:color .3s,background .3s}
+.float-nav:hover,.float-nav:focus{color:#fff;background:rgba(8,20,46,.75)}
+.float-nav.prev{left:10px}
+.float-nav.next{right:10px}
+@media(max-width:640px){.float-nav{font-size:1.7rem;padding:11px 8px}
+  .float-nav.prev{left:4px}.float-nav.next{right:4px}}
 .piece-nav{
   max-width:1200px;margin:70px auto 0;display:flex;justify-content:space-between;
   border-top:1px solid rgba(169,184,206,.18);padding-top:30px;
@@ -128,8 +142,12 @@ footer a:hover{color:var(--paper)}
   </ul>
 </nav>
 <main>
+<a class="float-nav prev" href="cyanotypejane15.html" aria-label="Previous piece: No. 15">&lsaquo;</a>
+<a class="float-nav next" href="cyanotypejane17.html" aria-label="Next piece: No. 17">&rsaquo;</a>
 <section class="detail">
-  <a class="back-link" href="index.html#work">&larr; Back to Gallery</a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span class="sep">&rsaquo;</span><a href="index.html#work">Gallery</a><span class="sep">&rsaquo;</span><span class="here">No. 16 &middot; Game Controller</span>
+  </nav>
   <div class="room-view">
     <h2 class="rv-head">In the Room</h2>
     <p class="rv-note">Shown at actual size (29.5 &times; 42 cm) on the wall.</p>
@@ -189,6 +207,10 @@ footer a:hover{color:var(--paper)}
 </footer>
 <script>
 document.getElementById('yr').textContent=new Date().getFullYear();
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft')window.location.href='cyanotypejane15.html';
+  if(e.key==='ArrowRight')window.location.href='cyanotypejane17.html';
+});
 (function(){
   var a='janeyatestheartist'+'\u0040'+'gmail.com';
   var e=document.querySelector('.email-addr');
