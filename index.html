@@ -134,18 +134,15 @@ section{padding:110px 6vw}
 #work{padding-top:90px}
 .grid{
   margin-top:56px;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:5vw 4vw;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:34px 22px;max-width:1200px;
 }
-@media(min-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
 figure.piece{cursor:pointer;opacity:0;transform:translateY(28px);
   transition:opacity .9s ease,transform .9s ease}
 figure.piece.seen{opacity:1;transform:none}
-figure.piece:nth-child(3n+2){margin-top:46px}
-@media(max-width:700px){figure.piece:nth-child(3n+2){margin-top:0}}
 .piece .frame{
   background:var(--ink2);overflow:hidden;
-  box-shadow:0 24px 60px -28px rgba(0,0,0,.85);
+  box-shadow:0 14px 34px -16px rgba(0,0,0,.85);
 }
 .piece img{
   width:100%;display:block;aspect-ratio:3/4;object-fit:cover;
@@ -153,12 +150,9 @@ figure.piece:nth-child(3n+2){margin-top:46px}
   filter:saturate(.96);
 }
 .piece:hover img{transform:scale(1.035);filter:saturate(1.08)}
-.piece figcaption{
-  display:flex;justify-content:space-between;align-items:baseline;
-  padding:14px 2px 0;gap:12px;
-}
-.piece .t{font-family:var(--serif);font-size:1.15rem;letter-spacing:.03em}
-.piece .n{font-size:.7rem;letter-spacing:.24em;color:var(--paper-dim)}
+.piece figcaption{padding:9px 2px 0}
+.piece .t{display:block;font-family:var(--serif);font-size:.82rem;letter-spacing:.02em;line-height:1.35}
+.piece .n{display:block;font-size:.58rem;letter-spacing:.2em;color:var(--paper-dim);margin-top:2px}
 .missing{
   aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
   color:var(--paper-dim);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
@@ -296,30 +290,30 @@ footer a:hover{color:var(--paper)}
    title = shown under the artwork (change these to your own titles!)
    alt   = description for accessibility & search engines          */
 const works = [
- {file:"jane1-wm.jpg",  title:"Circuit Glow",       alt:"Cyanotype of perforated dot-matrix panels above soft, ghostly blurred shapes"},
- {file:"jane2-wm.jpg",  title:"Static Bloom",       alt:"Glowing cyanotype of a boom box control panel with a luminous blue halo"},
- {file:"jane3-wm.jpg",  title:"Plugs and Circuits", alt:"Cyanotype of paddle-shaped fan blades, a circuit board square and a coiled cable among phone shells"},
- {file:"jane4-wm.jpg",  title:"Ring Cluster",       alt:"Cyanotype with multiple ring and gear shapes surrounding rectangular mechanical parts"},
- {file:"jane5-wm.jpg",  title:"Frames and Film",    alt:"Cyanotype of phone handsets, floppy disks, a coiled cable and framed film-strip squares"},
- {file:"jane6-wm.jpg",  title:"Perforated Halo",    alt:"Cyanotype of perforated rectangles, dotted ovals and circular dot-patterned discs"},
- {file:"jane7-wm.jpg",  title:"Blue Circuit",       alt:"Cyanotype with a pale blue accent circle among rings, an arrow shape and cassette-style rectangles"},
- {file:"jane8-wm.jpg",  title:"Solar Corona",       alt:"Cyanotype of a radiant sunburst disc, a floppy disk, small wrench tools and a gear ring"},
- {file:"jane9-wm.jpg",  title:"Contact Sheet",      alt:"Cyanotype featuring a grid of small film contact prints above phone shells, circles and a keyhole shape"},
- {file:"jane10-wm.jpg", title:"Gear and Handset",   alt:"Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable"},
- {file:"jane11-wm.jpg", title:"carousel",     alt:"Cyanotype of three circular slide-viewer apertures from an old projector, glowing like eclipses on deep blue"},
- {file:"jane12-wm.jpg", title:"Perforated Rings",   alt:"Cyanotype of a perforated mesh panel, D-shaped ring components and a large vinyl-record-like disc"},
- {file:"jane13-wm.jpg", title:"Negative Frames",    alt:"Cyanotype grid of small film-negative squares beside a radiant sunburst disc"},
- {file:"jane14-wm.jpg", title:"Mesh and Glow",      alt:"Cyanotype of a dotted mesh grille, a glowing rounded panel and interlocking ring shapes"},
- {file:"jane15-wm.jpg", title:"Pin Grid",           alt:"Cyanotype close-up of a dense pin-grid pattern beside circular components and a floppy disk"},
- {file:"jane16-wm.jpg", title:"Game Controller",    alt:"Cyanotype of a game controller silhouette with a D-pad cross and a radiant sunburst disc"},
- {file:"jane17-wm.jpg", title:"The Game", alt:"Cyanotype of ring and washer shapes beside a perforated strip and saw-toothed edges"},
- {file:"jane18-wm.jpg", title:"Cooling Fan",        alt:"Cyanotype of small cooling-fan blade shapes, circuit squares and a dense perforated panel"},
- {file:"jane19-wm.jpg", title:"Circuit Face",       alt:"Cyanotype collage of cable loops, a circular gear cluster and a grid of dotted squares"},
- {file:"jane20-wm.jpg", title:"Elastomeric Keypad", alt:"Cyanotype of old office phone directory-card covers, their grids of number windows glowing like a tower block at night"},
- {file:"jane21-wm.jpg", title:"Blueprint Assembly", alt:"Dense cyanotype collage of grilles, phone shells and keyboard rows"},
- {file:"jane22-wm.jpg", title:" CPU Cooling Fan",         alt:"Cyanotype of multiple cooling-fan blade discs connected by cable and wire shapes"},
- {file:"jane23-wm.jpg", title:"Memory Grid",        alt:"Cyanotype landscape of small rectangular blocks arranged in a repeating grid, like memory chip pins"},
- {file:"jane24-wm.jpg", title:"Office Phones",      alt:"Cyanotype of rows of office telephone keypads and handsets, their buttons glowing in grids like lit windows at night"},
+ {file:"jane1-th.jpg",  title:"Circuit Glow",       alt:"Cyanotype of perforated dot-matrix panels above soft, ghostly blurred shapes"},
+ {file:"jane2-th.jpg",  title:"Static Bloom",       alt:"Glowing cyanotype of a boom box control panel with a luminous blue halo"},
+ {file:"jane3-th.jpg",  title:"Plugs and Circuits", alt:"Cyanotype of paddle-shaped fan blades, a circuit board square and a coiled cable among phone shells"},
+ {file:"jane4-th.jpg",  title:"Ring Cluster",       alt:"Cyanotype with multiple ring and gear shapes surrounding rectangular mechanical parts"},
+ {file:"jane5-th.jpg",  title:"Frames and Film",    alt:"Cyanotype of phone handsets, floppy disks, a coiled cable and framed film-strip squares"},
+ {file:"jane6-th.jpg",  title:"Perforated Halo",    alt:"Cyanotype of perforated rectangles, dotted ovals and circular dot-patterned discs"},
+ {file:"jane7-th.jpg",  title:"Blue Circuit",       alt:"Cyanotype with a pale blue accent circle among rings, an arrow shape and cassette-style rectangles"},
+ {file:"jane8-th.jpg",  title:"Solar Corona",       alt:"Cyanotype of a radiant sunburst disc, a floppy disk, small wrench tools and a gear ring"},
+ {file:"jane9-th.jpg",  title:"Contact Sheet",      alt:"Cyanotype featuring a grid of small film contact prints above phone shells, circles and a keyhole shape"},
+ {file:"jane10-th.jpg", title:"Gear and Handset",   alt:"Cyanotype of a large square component with a circular gear, a phone handset and a coiled ribbon cable"},
+ {file:"jane11-th.jpg", title:"carousel",     alt:"Cyanotype of three circular slide-viewer apertures from an old projector, glowing like eclipses on deep blue"},
+ {file:"jane12-th.jpg", title:"Perforated Rings",   alt:"Cyanotype of a perforated mesh panel, D-shaped ring components and a large vinyl-record-like disc"},
+ {file:"jane13-th.jpg", title:"Negative Frames",    alt:"Cyanotype grid of small film-negative squares beside a radiant sunburst disc"},
+ {file:"jane14-th.jpg", title:"Mesh and Glow",      alt:"Cyanotype of a dotted mesh grille, a glowing rounded panel and interlocking ring shapes"},
+ {file:"jane15-th.jpg", title:"Pin Grid",           alt:"Cyanotype close-up of a dense pin-grid pattern beside circular components and a floppy disk"},
+ {file:"jane16-th.jpg", title:"Game Controller",    alt:"Cyanotype of a game controller silhouette with a D-pad cross and a radiant sunburst disc"},
+ {file:"jane17-th.jpg", title:"The Game", alt:"Cyanotype of ring and washer shapes beside a perforated strip and saw-toothed edges"},
+ {file:"jane18-th.jpg", title:"Cooling Fan",        alt:"Cyanotype of small cooling-fan blade shapes, circuit squares and a dense perforated panel"},
+ {file:"jane19-th.jpg", title:"Circuit Face",       alt:"Cyanotype collage of cable loops, a circular gear cluster and a grid of dotted squares"},
+ {file:"jane20-th.jpg", title:"Elastomeric Keypad", alt:"Cyanotype of old office phone directory-card covers, their grids of number windows glowing like a tower block at night"},
+ {file:"jane21-th.jpg", title:"Blueprint Assembly", alt:"Dense cyanotype collage of grilles, phone shells and keyboard rows"},
+ {file:"jane22-th.jpg", title:" CPU Cooling Fan",         alt:"Cyanotype of multiple cooling-fan blade discs connected by cable and wire shapes"},
+ {file:"jane23-th.jpg", title:"Memory Grid",        alt:"Cyanotype landscape of small rectangular blocks arranged in a repeating grid, like memory chip pins"},
+ {file:"jane24-th.jpg", title:"Office Phones",      alt:"Cyanotype of rows of office telephone keypads and handsets, their buttons glowing in grids like lit windows at night"},
 ];
 /* ------------------------------------------- */
 const grid = document.getElementById('grid');
@@ -334,7 +328,7 @@ works.forEach((w,i)=>{
       </div>
       <figcaption>
         <span class="t">${w.title}</span>
-        <span class="n">No. ${String(i+1).padStart(2,'0')} · Unique print</span>
+        <span class="n">No. ${String(i+1).padStart(2,'0')}</span>
       </figcaption>
     </a>`;
   grid.appendChild(fig);
