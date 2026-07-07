@@ -69,8 +69,7 @@ footer{
 footer a{color:var(--paper-dim)}
 footer a:hover{color:var(--paper)}
 .enquire-line{font-size:.92rem;color:var(--paper-dim);margin-top:6px}
-.email-addr{font-family:var(--serif);font-size:1.2rem;color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--cyan);transition:color .3s,border-color .3s}
-.email-addr:hover{color:#fff;border-color:#fff}
+.email-addr{font-family:var(--serif);font-size:1.2rem;color:var(--cyan);user-select:all}
 /* ---------- detail page ---------- */
 .detail{padding:140px 6vw 90px}
 .back-link{
@@ -207,7 +206,7 @@ footer a:hover{color:var(--paper)}
       </div>
 
       <p class="enquire-line">To enquire about this piece, please email<br>
-      <a class="email-addr" href="#">&hellip;</a></p>
+      <span class="email-addr">&hellip;</span></p>
   </div>
   <div class="piece-nav">
     <a href="cyanotypejane17.html">&lsaquo; No. 17</a>
@@ -221,7 +220,7 @@ footer a:hover{color:var(--paper)}
 </div>
 <footer>
   &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
-  <a href="#" class="mail-link">Contact</a> &middot;
+  <a href="index.html#contact">Contact</a> &middot;
   <a href="https://x.com/janeyatesartist" rel="noopener">X</a> &middot;
   <a href="https://www.instagram.com/janeyatesartist" rel="noopener">Instagram</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
@@ -252,10 +251,7 @@ document.addEventListener('keydown',function(e){
 (function(){
   var a='janeyatestheartist'+'\u0040'+'gmail.com';
   var e=document.querySelector('.email-addr');
-  if(e){e.textContent=a;e.setAttribute('href','mailto:'+a+'?subject='+encodeURIComponent('Enquiry: '+document.title));}
-  document.querySelectorAll('.mail-link').forEach(function(l){
-    l.setAttribute('href','mailto:'+a+'?subject='+encodeURIComponent('Cyanotype enquiry'));
-  });
+  if(e)e.textContent=a;
 })();
 </script>
 </body>
