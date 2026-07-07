@@ -215,7 +215,7 @@ footer a:hover{color:var(--paper)}
   <ul>
     <li><a href="#work">Work</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="enquiries.html">Contact</a></li>
   </ul>
 </nav>
 <header class="hero" id="top">
@@ -277,23 +277,13 @@ footer a:hover{color:var(--paper)}
     <div class="step"><div class="num">iv</div><h3>Wash</h3><p>Rinsing in water converts the chemistry to Prussian blue (ferric ferrocyanide). No two prints are ever the same.</p></div>
   </div>
 </section>
-<section id="contact">
-  <h2 class="section-head">Enquiries</h2>
-  <hr class="rule" style="margin-left:auto;margin-right:auto">
-  <p class="lede">Original prints from the series are available. For prices, commissions, exhibitions or anything else, I'd love to hear from you.</p>
-  <p class="email-addr">&hellip;</p>
-  <p class="socials">
-    <a href="https://x.com/janeyatesartist" rel="noopener" target="_blank">X&nbsp;@janeyatesartist</a>
-    <span aria-hidden="true">&middot;</span>
-    <a href="https://www.instagram.com/janeyatesartist" rel="noopener" target="_blank">Instagram&nbsp;@janeyatesartist</a>
-  </p>
-</section>
 </main>
 <footer>
   © <span id="yr"></span> Jane Yates · Lyme Regis, UK ·
-  <a href="#contact">Contact</a> ·
+  <a href="enquiries.html">Contact</a> ·
   <a href="https://x.com/janeyatesartist" rel="noopener">X</a> ·
-  <a href="https://www.instagram.com/janeyatesartist" rel="noopener">Instagram</a><br>
+  <a href="https://www.instagram.com/janeyatesartist" rel="noopener">Instagram</a> ·
+  <a href="https://uk.pinterest.com/JaneYatesArtist/" rel="noopener">Pinterest</a><br>
   Also by Jane: <a href="https://lymeregisdog.com" rel="noopener">LymeRegisDog.com</a>
 </footer>
 <script>
@@ -351,10 +341,6 @@ const io = new IntersectionObserver(es=>es.forEach(e=>{
 }),{threshold:.12});
 document.querySelectorAll('.piece').forEach(p=>io.observe(p));
 document.getElementById('yr').textContent=new Date().getFullYear();
-(function(){
-  var a='janeyatestheartist'+'\u0040'+'gmail.com';
-  document.querySelectorAll('.email-addr').forEach(function(e){e.textContent=a;});
-})();
 /* hero word: cursor-follow spotlight reveal (desktop/mouse only) */
 const heroWord=document.querySelector('.hero-word');
 if(heroWord && window.matchMedia('(hover: hover) and (pointer: fine)').matches){
