@@ -123,6 +123,21 @@ footer a:hover{color:var(--paper)}
 .float-nav.next{right:10px}
 @media(max-width:640px){.float-nav{font-size:1.7rem;padding:11px 8px}
   .float-nav.prev{left:4px}.float-nav.next{right:4px}}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:44px;max-width:1200px;margin:0 auto;align-items:start}
+@media(max-width:860px){.duo{grid-template-columns:1fr}}
+.duo .room-view{margin:0;max-width:none}
+.detail-info{max-width:760px;margin:64px auto 0}
+.detail-frame img{cursor:zoom-in}
+.detail .room{cursor:zoom-in}
+.lightbox{position:fixed;inset:0;z-index:100;background:rgba(4,10,24,.94);
+  display:flex;align-items:center;justify-content:center;padding:3vmin}
+.lightbox[hidden]{display:none}
+.lb-content{max-width:94vw;max-height:92vh}
+.lb-content img.lb-img{max-width:94vw;max-height:92vh;width:auto;height:auto;display:block;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lb-content .room{width:min(94vw,168vh);cursor:default}
+.lb-close{position:fixed;top:14px;right:18px;z-index:101;font-size:2.6rem;line-height:1;
+  color:var(--paper);background:none;border:0;cursor:pointer;padding:6px 12px;font-family:var(--sans)}
+.lb-close:hover,.lb-close:focus{color:var(--cyan)}
 .piece-nav{
   max-width:1200px;margin:70px auto 0;display:flex;justify-content:space-between;
   border-top:1px solid rgba(169,184,206,.18);padding-top:30px;
@@ -148,19 +163,24 @@ footer a:hover{color:var(--paper)}
   <nav class="crumbs" aria-label="Breadcrumb">
     <a href="index.html">Home</a><span class="sep">&rsaquo;</span><a href="index.html#work">Gallery</a><span class="sep">&rsaquo;</span><span class="here">No. 02 &middot; Static Bloom</span>
   </nav>
-  <div class="room-view">
+  <div class="duo">
+    <div class="duo-cell">
+      <h2 class="rv-head">The Print</h2>
+      <p class="rv-note">Watermarked image &mdash; click to enlarge.</p>
+      <figure class="detail-frame">
+      <img src="jane2-wm.jpg" alt="Glowing cyanotype of a boom box control panel with a luminous blue halo">
+    </figure>
+    </div>
+  <div class="duo-cell room-view">
     <h2 class="rv-head">In the Room</h2>
-    <p class="rv-note">Shown at actual size (42 &times; 29.5 cm) on the wall.</p>
+    <p class="rv-note">Shown at actual size (42 &times; 29.5 cm) on the wall. Click to enlarge.</p>
     <div class="room">
       <img class="room-bg" src="room2.png" alt="Living room with a dark grey sofa">
       <img class="room-art" src="jane2-sm.jpg" alt="" style="left:50.3%;top:27.6%;width:7.32%">
     </div>
   </div>
-  <div class="detail-wrap">
-    <figure class="detail-frame">
-      <img src="jane2-wm.jpg" alt="Glowing cyanotype of a boom box control panel with a luminous blue halo">
-    </figure>
-    <div class="detail-info">
+  </div>
+  <div class="detail-info">
       <div class="d-num">No. 02 &middot; Unique print</div>
       <h1 class="d-title">Static Bloom</h1>
       <p class="d-desc">Glowing cyanotype of a boom box control panel with a luminous blue halo</p>
@@ -190,7 +210,6 @@ footer a:hover{color:var(--paper)}
 
       <p class="enquire-line">To enquire about this piece, please email<br>
       <a class="email-addr" href="#">&hellip;</a></p>
-    </div>
   </div>
   <div class="piece-nav">
     <a href="cyanotypejane1.html">&lsaquo; No. 01</a>
@@ -198,6 +217,10 @@ footer a:hover{color:var(--paper)}
   </div>
 </section>
 </main>
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" aria-label="Close enlarged view">&times;</button>
+  <div class="lb-content"></div>
+</div>
 <footer>
   &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
   <a href="#" class="mail-link">Contact</a> &middot;
@@ -207,10 +230,27 @@ footer a:hover{color:var(--paper)}
 </footer>
 <script>
 document.getElementById('yr').textContent=new Date().getFullYear();
+function closeLightbox(){
+  var lb=document.getElementById('lightbox');
+  lb.hidden=true;lb.querySelector('.lb-content').innerHTML='';document.body.style.overflow='';
+}
 document.addEventListener('keydown',function(e){
+  if(!document.getElementById('lightbox').hidden){if(e.key==='Escape')closeLightbox();return;}
   if(e.key==='ArrowLeft')window.location.href='cyanotypejane1.html';
   if(e.key==='ArrowRight')window.location.href='cyanotypejane3.html';
 });
+(function(){
+  var lb=document.getElementById('lightbox'),content=lb.querySelector('.lb-content');
+  function open(node){content.innerHTML='';content.appendChild(node);lb.hidden=false;document.body.style.overflow='hidden';}
+  var art=document.querySelector('.detail-frame img');
+  if(art)art.addEventListener('click',function(){
+    var i=new Image();i.className='lb-img';i.src=art.getAttribute('src');i.alt=art.getAttribute('alt')||'';open(i);
+  });
+  var room=document.querySelector('.detail .room');
+  if(room)room.addEventListener('click',function(){open(room.cloneNode(true));});
+  lb.querySelector('.lb-close').addEventListener('click',closeLightbox);
+  lb.addEventListener('click',function(e){if(e.target===lb)closeLightbox();});
+})();
 (function(){
   var a='janeyatestheartist'+'\u0040'+'gmail.com';
   var e=document.querySelector('.email-addr');
