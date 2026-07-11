@@ -70,6 +70,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2/dist/pose-detection.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1/dist/body-segmentation.min.js"></script>
 <script>
 const cam = document.getElementById('cam');
 const paint = document.getElementById('paint');
@@ -78,8 +79,10 @@ const statusBox = document.getElementById('status');
 const flipBtn = document.getElementById('flipBtn');
 
 let detector = null;
+let segmenter = null;         // learns which pixels are the person, so wings can hide behind them
 let facing = 'environment';   // back camera first; flip button swaps
 let stream = null;
+const maskCanvas = document.createElement('canvas');
 
 function say(msg) {
   statusBox.style.display = msg ? 'block' : 'none';
@@ -121,6 +124,14 @@ async function start() {
     say('the angel magic could not load. is the internet connected? ' + err.message);
     return;
   }
+  try {
+    // second helper: knows the person's outline, so wings can go behind them.
+    // if it fails to load the page still works, wings just sit in front.
+    segmenter = await bodySegmentation.createSegmenter(
+      bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation,
+      { runtime: 'tfjs', modelType: 'general' }
+    );
+  } catch (err) { segmenter = null; }
   say('point the camera at a person');
   flipBtn.style.display = 'block';
   setTimeout(() => say(''), 6000);
@@ -139,6 +150,26 @@ async function loop() {
     ctx.clearRect(0, 0, paint.width, paint.height);
     const t = performance.now();
     for (const pose of poses) drawAngel(pose.keypoints, t);
+    // rub out the wings wherever the person is, so wings sit behind them
+    if (segmenter && poses.length > 0) {
+      try {
+        const people = await segmenter.segmentPeople(cam);
+        if (people.length > 0) {
+          const mask = await bodySegmentation.toBinaryMask(
+            people,
+            { r: 0, g: 0, b: 0, a: 255 },   // person pixels
+            { r: 0, g: 0, b: 0, a: 0 }      // everything else
+          );
+          maskCanvas.width = mask.width;
+          maskCanvas.height = mask.height;
+          maskCanvas.getContext('2d').putImageData(mask, 0, 0);
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.drawImage(maskCanvas, 0, 0, paint.width, paint.height);
+          ctx.restore();
+        }
+      } catch (e) {}
+    }
   }
   requestAnimationFrame(loop);
 }
