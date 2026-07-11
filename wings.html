@@ -43,12 +43,15 @@
     font-size: 16px; padding: 10px 22px; border-radius: 20px;
     z-index: 5; max-width: 85%; text-align: center;
   }
-  #flipBtn {
+  #controls {
     position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    display: none; gap: 10px; z-index: 5;
+  }
+  #controls button {
     font-family: Verdana, sans-serif; font-size: 16px;
     padding: 12px 26px; border: none; border-radius: 30px;
     background: rgba(255, 233, 168, 0.9); color: #1a1a2e;
-    cursor: pointer; z-index: 5; display: none;
+    cursor: pointer; white-space: nowrap;
   }
 </style>
 </head>
@@ -64,12 +67,16 @@
      Nothing is recorded and nothing leaves your phone.</p>
   <p>The page starts with the outward camera, for seeing other people.
      To give yourself wings instead, press the Flip camera button
-     at the bottom of the screen once it starts.</p>
+     at the bottom of the screen once it starts.
+     The Style button swaps between angel and devil.</p>
   <button id="startBtn">Start the angels</button>
 </div>
 
 <div id="status" style="display:none"></div>
-<button id="flipBtn">Flip camera</button>
+<div id="controls">
+  <button id="flipBtn">Flip camera</button>
+  <button id="styleBtn">Style: angel</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2/dist/pose-detection.min.js"></script>
@@ -79,8 +86,11 @@ const cam = document.getElementById('cam');
 const paint = document.getElementById('paint');
 const ctx = paint.getContext('2d');
 const statusBox = document.getElementById('status');
+const controls = document.getElementById('controls');
 const flipBtn = document.getElementById('flipBtn');
+const styleBtn = document.getElementById('styleBtn');
 
+let style = 'angel';          // 'angel' or 'devil' - the style button swaps
 let detector = null;
 let segmenter = null;         // learns which pixels are the person, so wings can hide behind them
 let facing = 'environment';   // back camera first; flip button swaps
@@ -122,7 +132,7 @@ async function start() {
   try {
     say('asking for the camera...');
     await openCamera();
-    flipBtn.style.display = 'block';
+    controls.style.display = 'flex';
   } catch (err) {
     say('the camera said no. check camera permission for this page and reload.');
     return;
@@ -156,14 +166,22 @@ flipBtn.addEventListener('click', async () => {
   try { await openCamera(); } catch (e) { say('could not flip the camera'); }
 });
 
+styleBtn.addEventListener('click', () => {
+  style = (style === 'angel') ? 'devil' : 'angel';
+  styleBtn.textContent = 'Style: ' + style;
+});
+
 async function loop() {
   if (detector && cam.readyState >= 2) {
     let poses = [];
     try { poses = await detector.estimatePoses(cam); } catch (e) {}
     ctx.clearRect(0, 0, paint.width, paint.height);
     const t = performance.now();
-    for (const pose of poses) drawAngel(pose.keypoints, t);
-    // rub out the wings wherever the person is, so wings sit behind them
+    for (const pose of poses) drawBack(pose.keypoints, t);
+    // rub the wings out wherever the body is, using the skeleton -
+    // this always works, even when the outline helper below struggles
+    for (const pose of poses) eraseBody(pose.keypoints);
+    // and a finer rub-out from the person's exact outline, when available
     if (segmenter && poses.length > 0) {
       try {
         const people = await segmenter.segmentPeople(cam);
@@ -183,22 +201,93 @@ async function loop() {
         }
       } catch (e) {}
     }
+    // halo or horns go on last, in front of everything
+    for (const pose of poses) drawFront(pose.keypoints, t);
   }
   requestAnimationFrame(loop);
 }
 
-function drawAngel(kp, t) {
+function shoulderInfo(kp) {
   const ls = kp[5], rs = kp[6];              // shoulders
-  if (!ls || !rs || ls.score < 0.25 || rs.score < 0.25) return;
-  const shoulderW = Math.hypot(ls.x - rs.x, ls.y - rs.y);
-  if (shoulderW < 12) return;                 // too small or sideways-on
-  const cx = (ls.x + rs.x) / 2;
-  const cy = (ls.y + rs.y) / 2 + shoulderW * 0.18;
+  if (!ls || !rs || ls.score < 0.25 || rs.score < 0.25) return null;
+  const w = Math.hypot(ls.x - rs.x, ls.y - rs.y);
+  if (w < 12) return null;                    // too small or sideways-on
+  return { ls, rs, w, cx: (ls.x + rs.x) / 2, cy: (ls.y + rs.y) / 2 + w * 0.18 };
+}
+
+function drawBack(kp, t) {
+  const s = shoulderInfo(kp);
+  if (!s) return;
   // gentle slow flap so the wings feel alive
-  const flap = Math.sin(t / 700 + cx / 60) * 0.08;
-  drawWing(cx, cy, shoulderW, -1, flap);
-  drawWing(cx, cy, shoulderW, 1, flap);
-  drawHalo(kp, shoulderW, t);
+  const flap = Math.sin(t / 700 + s.cx / 60) * 0.08;
+  drawWing(s.cx, s.cy, s.w, -1, flap);
+  drawWing(s.cx, s.cy, s.w, 1, flap);
+  if (style === 'devil') drawTail(kp, s, t);
+}
+
+function drawFront(kp, t) {
+  const s = shoulderInfo(kp);
+  if (!s) return;
+  if (style === 'angel') drawHalo(kp, s.w, t);
+  else drawHorns(kp, s.w, t);
+}
+
+// cut the wings away from the head, chest and arms using the skeleton
+function eraseBody(kp) {
+  const s = shoulderInfo(kp);
+  if (!s) return;
+  const need = i => kp[i] && kp[i].score > 0.2;
+  const w = s.w;
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.fillStyle = 'rgba(0,0,0,1)';
+  ctx.strokeStyle = 'rgba(0,0,0,1)';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  // head and neck
+  const head = [0, 1, 2, 3, 4].filter(need).map(i => kp[i]);
+  if (head.length > 0) {
+    let hx = 0, hy = 0;
+    for (const p of head) { hx += p.x; hy += p.y; }
+    hx /= head.length; hy /= head.length;
+    ctx.beginPath();
+    ctx.arc(hx, hy, w * 0.45, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(hx, hy);
+    ctx.lineTo(s.cx, s.cy);
+    ctx.lineWidth = w * 0.5;
+    ctx.stroke();
+  }
+  // chest and tummy - use the hips if they are in view,
+  // otherwise a generous block below the shoulders (close-up selfies)
+  const lh = kp[11], rh = kp[12];
+  ctx.beginPath();
+  if (need(11) && need(12)) {
+    ctx.moveTo(s.ls.x + (s.ls.x - s.rs.x) * 0.15, s.ls.y - w * 0.15);
+    ctx.lineTo(s.rs.x + (s.rs.x - s.ls.x) * 0.15, s.rs.y - w * 0.15);
+    ctx.lineTo(rh.x + (rh.x - lh.x) * 0.2, rh.y + w * 0.2);
+    ctx.lineTo(lh.x + (lh.x - rh.x) * 0.2, lh.y + w * 0.2);
+  } else {
+    ctx.moveTo(s.ls.x + (s.ls.x - s.rs.x) * 0.2, s.ls.y - w * 0.2);
+    ctx.lineTo(s.rs.x + (s.rs.x - s.ls.x) * 0.2, s.rs.y - w * 0.2);
+    ctx.lineTo(s.rs.x + (s.rs.x - s.ls.x) * 0.25, s.rs.y + w * 1.7);
+    ctx.lineTo(s.ls.x + (s.ls.x - s.rs.x) * 0.25, s.ls.y + w * 1.7);
+  }
+  ctx.closePath();
+  ctx.fill();
+  // arms - shoulder to elbow to wrist
+  ctx.lineWidth = w * 0.32;
+  for (const arm of [[5, 7, 9], [6, 8, 10]]) {
+    if (need(arm[0]) && need(arm[1])) {
+      ctx.beginPath();
+      ctx.moveTo(kp[arm[0]].x, kp[arm[0]].y);
+      ctx.lineTo(kp[arm[1]].x, kp[arm[1]].y);
+      if (need(arm[2])) ctx.lineTo(kp[arm[2]].x, kp[arm[2]].y);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 
 function drawWing(cx, cy, w, side, flap) {
@@ -210,14 +299,20 @@ function drawWing(cx, cy, w, side, flap) {
   const tipY = baseY - rise * 0.85;
 
   ctx.save();
-  ctx.shadowColor = 'rgba(255, 230, 150, 0.9)';
-  ctx.shadowBlur = w * 0.35;
-
   // the wing shape - up and out from the shoulder, sweeping back down
   const grad = ctx.createLinearGradient(baseX, baseY - rise, baseX, baseY + w * 0.6);
-  grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-  grad.addColorStop(0.6, 'rgba(255, 250, 235, 0.7)');
-  grad.addColorStop(1, 'rgba(255, 240, 200, 0.25)');
+  if (style === 'devil') {
+    ctx.shadowColor = 'rgba(255, 60, 40, 0.85)';
+    grad.addColorStop(0, 'rgba(40, 4, 12, 0.95)');
+    grad.addColorStop(0.6, 'rgba(80, 10, 18, 0.75)');
+    grad.addColorStop(1, 'rgba(140, 25, 30, 0.3)');
+  } else {
+    ctx.shadowColor = 'rgba(255, 230, 150, 0.9)';
+    grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+    grad.addColorStop(0.6, 'rgba(255, 250, 235, 0.7)');
+    grad.addColorStop(1, 'rgba(255, 240, 200, 0.25)');
+  }
+  ctx.shadowBlur = w * 0.35;
   ctx.fillStyle = grad;
 
   ctx.beginPath();
@@ -240,7 +335,7 @@ function drawWing(cx, cy, w, side, flap) {
   ctx.fill();
 
   // feather lines fanning out from the shoulder
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+  ctx.strokeStyle = (style === 'devil') ? 'rgba(255, 90, 70, 0.4)' : 'rgba(255, 255, 255, 0.55)';
   ctx.lineWidth = Math.max(1, w * 0.02);
   for (let i = 1; i <= 5; i++) {
     const f = i / 6;
@@ -255,13 +350,77 @@ function drawWing(cx, cy, w, side, flap) {
   ctx.restore();
 }
 
-function drawHalo(kp, w, t) {
-  // hover the halo above whichever head parts the camera can see
+function headTop(kp) {
+  // middle of the face and the highest point the camera can see of the head
   const head = [kp[0], kp[1], kp[2], kp[3], kp[4]].filter(p => p && p.score > 0.25);
-  if (head.length === 0) return;
+  if (head.length === 0) return null;
   let hx = 0, hy = 1e9;
   for (const p of head) { hx += p.x; if (p.y < hy) hy = p.y; }
-  hx /= head.length;
+  return { x: hx / head.length, y: hy };
+}
+
+function drawHorns(kp, w, t) {
+  const h = headTop(kp);
+  if (!h) return;
+  const bob = Math.sin(t / 900 + h.x / 80) * w * 0.04;
+  const baseY = h.y - w * 0.5 + bob;
+  ctx.save();
+  ctx.shadowColor = 'rgba(255, 60, 40, 0.9)';
+  ctx.shadowBlur = w * 0.25;
+  ctx.fillStyle = 'rgba(150, 20, 25, 0.95)';
+  for (const side of [-1, 1]) {
+    const bx = h.x + side * w * 0.3;
+    ctx.beginPath();
+    ctx.moveTo(bx - side * w * 0.12, baseY);
+    ctx.quadraticCurveTo(bx + side * w * 0.05, baseY - w * 0.2, bx + side * w * 0.22, baseY - w * 0.45);
+    ctx.quadraticCurveTo(bx + side * w * 0.1, baseY - w * 0.15, bx + side * w * 0.12, baseY);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawTail(kp, s, t) {
+  // the tail starts low behind them and swishes side to side
+  const lh = kp[11], rh = kp[12];
+  let bx, by;
+  if (lh && rh && lh.score > 0.2 && rh.score > 0.2) {
+    bx = (lh.x + rh.x) / 2;
+    by = (lh.y + rh.y) / 2 + s.w * 0.2;
+  } else {
+    bx = s.cx;
+    by = s.cy + s.w * 1.6;
+  }
+  const swish = Math.sin(t / 600 + bx / 90);
+  const tipX = bx + s.w * (1.1 + swish * 0.25);
+  const tipY = by + s.w * 0.55 - swish * s.w * 0.2;
+  ctx.save();
+  ctx.shadowColor = 'rgba(255, 60, 40, 0.8)';
+  ctx.shadowBlur = s.w * 0.2;
+  ctx.strokeStyle = 'rgba(150, 20, 25, 0.95)';
+  ctx.fillStyle = 'rgba(150, 20, 25, 0.95)';
+  ctx.lineWidth = Math.max(2, s.w * 0.08);
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(bx, by);
+  ctx.quadraticCurveTo(bx + s.w * 0.2, by + s.w * 0.8, tipX, tipY);
+  ctx.stroke();
+  // the little arrow point on the end
+  const ang = Math.atan2(tipY - (by + s.w * 0.8), tipX - (bx + s.w * 0.2));
+  ctx.beginPath();
+  ctx.moveTo(tipX + Math.cos(ang) * s.w * 0.28, tipY + Math.sin(ang) * s.w * 0.28);
+  ctx.lineTo(tipX + Math.cos(ang + 2.5) * s.w * 0.18, tipY + Math.sin(ang + 2.5) * s.w * 0.18);
+  ctx.lineTo(tipX + Math.cos(ang - 2.5) * s.w * 0.18, tipY + Math.sin(ang - 2.5) * s.w * 0.18);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawHalo(kp, w, t) {
+  // hover the halo above whichever head parts the camera can see
+  const h = headTop(kp);
+  if (!h) return;
+  const hx = h.x, hy = h.y;
   const bob = Math.sin(t / 900 + hx / 80) * w * 0.04;
   ctx.save();
   ctx.shadowColor = 'rgba(255, 220, 120, 1)';
