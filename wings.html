@@ -62,6 +62,9 @@
   <p>Point your camera at a person and they get angel wings.
      An idea by Jane Yates from 2015, finally alive.
      Nothing is recorded and nothing leaves your phone.</p>
+  <p>The page starts with the outward camera, for seeing other people.
+     To give yourself wings instead, press the Flip camera button
+     at the bottom of the screen once it starts.</p>
   <button id="startBtn">Start the angels</button>
 </div>
 
@@ -91,10 +94,20 @@ function say(msg) {
 
 async function openCamera() {
   if (stream) stream.getTracks().forEach(t => t.stop());
-  stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
-    audio: false
-  });
+  cam.srcObject = null;
+  try {
+    // firmly ask for the chosen camera - phones can ignore a gentle request
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: facing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+  } catch (e) {
+    // no such camera on this device (like a laptop) - take whatever there is
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+  }
   cam.srcObject = stream;
   await new Promise(res => { cam.onloadedmetadata = res; });
   await cam.play();
@@ -109,6 +122,7 @@ async function start() {
   try {
     say('asking for the camera...');
     await openCamera();
+    flipBtn.style.display = 'block';
   } catch (err) {
     say('the camera said no. check camera permission for this page and reload.');
     return;
@@ -133,7 +147,6 @@ async function start() {
     );
   } catch (err) { segmenter = null; }
   say('point the camera at a person');
-  flipBtn.style.display = 'block';
   setTimeout(() => say(''), 6000);
   loop();
 }
