@@ -1,1 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Walk With Angels</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #000; overflow: hidden;
+    font-family: Verdana, sans-serif;
+  }
+  #cam, #paint {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .mirrored #cam, .mirrored #paint { transform: scaleX(-1); }
+  #welcome {
+    position: fixed; inset: 0;
+    background: linear-gradient(#1a1a2e, #0f0f1a);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 24px; z-index: 10;
+  }
+  #welcome h1 {
+    color: #ffe9a8; font-size: 28px; font-weight: normal;
+    margin: 0 0 18px 0;
+  }
+  #welcome p {
+    color: #c8c8dc; font-size: 17px; line-height: 1.6;
+    max-width: 420px; margin: 0 0 30px 0;
+  }
+  #startBtn {
+    font-family: Verdana, sans-serif; font-size: 22px;
+    padding: 18px 40px; border: none; border-radius: 40px;
+    background: #ffe9a8; color: #1a1a2e; cursor: pointer;
+  }
+  #status {
+    position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%);
+    background: rgba(20, 20, 40, 0.85); color: #ffe9a8;
+    font-size: 16px; padding: 10px 22px; border-radius: 20px;
+    z-index: 5; max-width: 85%; text-align: center;
+  }
+  #flipBtn {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    font-family: Verdana, sans-serif; font-size: 16px;
+    padding: 12px 26px; border: none; border-radius: 30px;
+    background: rgba(255, 233, 168, 0.9); color: #1a1a2e;
+    cursor: pointer; z-index: 5; display: none;
+  }
+</style>
+</head>
+<body>
 
+<video id="cam" autoplay muted playsinline></video>
+<canvas id="paint"></canvas>
+
+<div id="welcome">
+  <h1>Walk With Angels</h1>
+  <p>Point your camera at a person and they get angel wings.
+     An idea by Jane Yates from 2015, finally alive.
+     Nothing is recorded and nothing leaves your phone.</p>
+  <button id="startBtn">Start the angels</button>
+</div>
+
+<div id="status" style="display:none"></div>
+<button id="flipBtn">Flip camera</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2/dist/pose-detection.min.js"></script>
+<script>
+const cam = document.getElementById('cam');
+const paint = document.getElementById('paint');
+const ctx = paint.getContext('2d');
+const statusBox = document.getElementById('status');
+const flipBtn = document.getElementById('flipBtn');
+
+let detector = null;
+let facing = 'environment';   // back camera first; flip button swaps
+let stream = null;
+
+function say(msg) {
+  statusBox.style.display = msg ? 'block' : 'none';
+  statusBox.textContent = msg;
+}
+
+async function openCamera() {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: false
+  });
+  cam.srcObject = stream;
+  await new Promise(res => { cam.onloadedmetadata = res; });
+  await cam.play();
+  paint.width = cam.videoWidth;
+  paint.height = cam.videoHeight;
+  // selfie camera shows mirrored, like a mirror should
+  document.body.classList.toggle('mirrored', facing === 'user');
+}
+
+async function start() {
+  document.getElementById('welcome').remove();
+  try {
+    say('asking for the camera...');
+    await openCamera();
+  } catch (err) {
+    say('the camera said no. check camera permission for this page and reload.');
+    return;
+  }
+  try {
+    say('loading the angel magic... this takes a few seconds the first time');
+    await tf.setBackend('webgl');
+    detector = await poseDetection.createDetector(
+      poseDetection.SupportedModels.MoveNet,
+      { modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING, enableTracking: true }
+    );
+  } catch (err) {
+    say('the angel magic could not load. is the internet connected? ' + err.message);
+    return;
+  }
+  say('point the camera at a person');
+  flipBtn.style.display = 'block';
+  setTimeout(() => say(''), 6000);
+  loop();
+}
+
+flipBtn.addEventListener('click', async () => {
+  facing = (facing === 'environment') ? 'user' : 'environment';
+  try { await openCamera(); } catch (e) { say('could not flip the camera'); }
+});
+
+async function loop() {
+  if (detector && cam.readyState >= 2) {
+    let poses = [];
+    try { poses = await detector.estimatePoses(cam); } catch (e) {}
+    ctx.clearRect(0, 0, paint.width, paint.height);
+    const t = performance.now();
+    for (const pose of poses) drawAngel(pose.keypoints, t);
+  }
+  requestAnimationFrame(loop);
+}
+
+function drawAngel(kp, t) {
+  const ls = kp[5], rs = kp[6];              // shoulders
+  if (!ls || !rs || ls.score < 0.25 || rs.score < 0.25) return;
+  const shoulderW = Math.hypot(ls.x - rs.x, ls.y - rs.y);
+  if (shoulderW < 12) return;                 // too small or sideways-on
+  const cx = (ls.x + rs.x) / 2;
+  const cy = (ls.y + rs.y) / 2 + shoulderW * 0.18;
+  // gentle slow flap so the wings feel alive
+  const flap = Math.sin(t / 700 + cx / 60) * 0.08;
+  drawWing(cx, cy, shoulderW, -1, flap);
+  drawWing(cx, cy, shoulderW, 1, flap);
+  drawHalo(kp, shoulderW, t);
+}
+
+function drawWing(cx, cy, w, side, flap) {
+  const baseX = cx + side * w * 0.3;
+  const baseY = cy;
+  const span = w * 1.7;
+  const rise = w * (1.9 + flap * 6);
+  const tipX = baseX + side * span;
+  const tipY = baseY - rise * 0.85;
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(255, 230, 150, 0.9)';
+  ctx.shadowBlur = w * 0.35;
+
+  // the wing shape - up and out from the shoulder, sweeping back down
+  const grad = ctx.createLinearGradient(baseX, baseY - rise, baseX, baseY + w * 0.6);
+  grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+  grad.addColorStop(0.6, 'rgba(255, 250, 235, 0.7)');
+  grad.addColorStop(1, 'rgba(255, 240, 200, 0.25)');
+  ctx.fillStyle = grad;
+
+  ctx.beginPath();
+  ctx.moveTo(baseX, baseY);
+  ctx.bezierCurveTo(
+    baseX + side * span * 0.05, baseY - rise * 1.15,
+    baseX + side * span * 0.7, baseY - rise * 1.05,
+    tipX, tipY
+  );
+  ctx.bezierCurveTo(
+    baseX + side * span * 0.7, baseY - rise * 0.45,
+    baseX + side * span * 0.75, baseY + w * 0.5,
+    baseX + side * span * 0.28, baseY + w * 0.62
+  );
+  ctx.quadraticCurveTo(
+    baseX + side * span * 0.12, baseY + w * 0.3,
+    baseX, baseY
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  // feather lines fanning out from the shoulder
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+  ctx.lineWidth = Math.max(1, w * 0.02);
+  for (let i = 1; i <= 5; i++) {
+    const f = i / 6;
+    ctx.beginPath();
+    ctx.moveTo(baseX, baseY);
+    ctx.quadraticCurveTo(
+      baseX + side * span * 0.45 * f + side * w * 0.1, baseY - rise * f * 0.95,
+      baseX + side * span * (0.35 + 0.65 * f), baseY - rise * (0.85 * f) + w * 0.3 * (1 - f)
+    );
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawHalo(kp, w, t) {
+  // hover the halo above whichever head parts the camera can see
+  const head = [kp[0], kp[1], kp[2], kp[3], kp[4]].filter(p => p && p.score > 0.25);
+  if (head.length === 0) return;
+  let hx = 0, hy = 1e9;
+  for (const p of head) { hx += p.x; if (p.y < hy) hy = p.y; }
+  hx /= head.length;
+  const bob = Math.sin(t / 900 + hx / 80) * w * 0.04;
+  ctx.save();
+  ctx.shadowColor = 'rgba(255, 220, 120, 1)';
+  ctx.shadowBlur = w * 0.3;
+  ctx.strokeStyle = 'rgba(255, 235, 170, 0.95)';
+  ctx.lineWidth = Math.max(2, w * 0.06);
+  ctx.beginPath();
+  ctx.ellipse(hx, hy - w * 0.55 + bob, w * 0.42, w * 0.13, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+document.getElementById('startBtn').addEventListener('click', start);
+</script>
+
+</body>
+</html>
