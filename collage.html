@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Cyanotype Collage - Jane Yates</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+    background: #eef1f6;
+    font-family: Verdana, sans-serif;
+    color: #2a3550;
+    overflow: hidden;
+  }
+  #wrap {
+    height: 100vh; display: flex; flex-direction: column;
+    align-items: center; gap: 8px; padding: 10px; box-sizing: border-box;
+  }
+  h1 { font-size: 20px; font-weight: normal; margin: 0; }
+  #intro { font-size: 13px; margin: 0; text-align: center; max-width: 560px; }
+  #intro a { color: #2a5aa8; }
+  #paper {
+    position: relative; background: #fdfcf9;
+    box-shadow: 0 6px 24px rgba(42, 53, 80, 0.25);
+    border: 1px solid #d8dce6;
+    touch-action: none; overflow: hidden;
+    flex: 1; width: min(94vw, 700px); max-width: 700px;
+  }
+  .piece {
+    position: absolute; cursor: move; touch-action: none;
+  }
+  .piece img {
+    width: 100%; height: auto; display: block;
+    filter: drop-shadow(0 2px 6px rgba(26, 43, 84, 0.45));
+    pointer-events: none;
+    -webkit-user-drag: none; user-select: none;
+  }
+  .piece.sel { outline: 2px dashed #2a5aa8; outline-offset: 4px; }
+  .grip {
+    position: absolute; width: 26px; height: 26px; border-radius: 50%;
+    background: #ffffff; border: 2px solid #2a5aa8;
+    display: none; align-items: center; justify-content: center;
+    font-size: 13px; color: #2a5aa8; line-height: 1;
+  }
+  .piece.sel .grip { display: flex; }
+  .grip.size { right: -16px; bottom: -16px; cursor: nwse-resize; }
+  .grip.spin { left: 50%; top: -34px; margin-left: -13px; cursor: grab; }
+  .grip.bin  { right: -16px; top: -16px; cursor: pointer; }
+  #wm {
+    position: absolute; right: 10px; bottom: 8px;
+    font-size: 11px; color: rgba(42, 53, 80, 0.75);
+    background: rgba(253, 252, 249, 0.85);
+    padding: 3px 10px; border-radius: 10px;
+    opacity: 0; transition: opacity 1.5s; pointer-events: none;
+  }
+  #wm.on { opacity: 1; }
+  #tray {
+    display: flex; gap: 6px; overflow-x: auto;
+    width: min(94vw, 700px); padding: 6px;
+    background: #ffffff; border-radius: 12px;
+    border: 1px solid #d8dce6; box-sizing: border-box;
+    flex: none;
+  }
+  #tray button {
+    flex: none; width: 62px; height: 62px;
+    border: 1px solid #e2e5ee; border-radius: 8px;
+    background: #10265c; cursor: pointer; padding: 4px;
+  }
+  #tray button img { max-width: 100%; max-height: 100%; }
+  #row2 { display: flex; gap: 10px; flex: none; }
+  #row2 button {
+    font-family: Verdana, sans-serif; font-size: 14px;
+    padding: 9px 20px; border: none; border-radius: 24px;
+    background: #2a5aa8; color: #ffffff; cursor: pointer;
+  }
+  #row2 button.quiet { background: #9aa6c0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Cyanotype Collage</h1>
+  <p id="intro">Make your own picture from pieces of my cyanotype prints.
+     Tap a piece below to add it, drag it around, and use the little circles
+     to resize, turn or remove it. Real prints live in
+     <a href="index.html">the gallery</a>.</p>
+  <div id="paper">
+    <div id="wm">Made with original art by Jane Yates &#169; 2025 &#183; janeyates.co.uk</div>
+  </div>
+  <div id="tray"></div>
+  <div id="row2">
+    <button id="saveBtn">Save my picture</button>
+    <button id="clearBtn" class="quiet">Start again</button>
+  </div>
+</div>
+
+<script>
+const paper = document.getElementById('paper');
+const tray = document.getElementById('tray');
+const wm = document.getElementById('wm');
+
+// the cut-out shapes, made from three of my prints
+const names = [];
+for (const base of ['jane3', 'jane10', 'jane13']) {
+  for (let i = 1; i <= 14; i++) names.push('p-' + base + '-' + i + '.png');
+}
+
+let selected = null;
+let action = null;   // what the finger is doing: move, size or spin
+let pieceCount = 0;
+
+function select(p) {
+  if (selected) selected.classList.remove('sel');
+  selected = p;
+  if (p) { p.classList.add('sel'); paper.appendChild(p); }
+}
+
+function addPiece(name) {
+  const p = document.createElement('div');
+  p.className = 'piece';
+  p.dataset.ang = '0';
+  const img = document.createElement('img');
+  img.src = 'collage/' + name;
+  p.appendChild(img);
+  for (const kind of ['size', 'spin', 'bin']) {
+    const g = document.createElement('div');
+    g.className = 'grip ' + kind;
+    g.dataset.kind = kind;
+    if (kind === 'spin') g.textContent = '↻';
+    if (kind === 'bin') g.textContent = '×';
+    p.appendChild(g);
+  }
+  img.onload = () => {
+    const pw = paper.clientWidth;
+    p.style.width = Math.max(50, Math.min(img.naturalWidth * 1.6, pw * 0.3)) + 'px';
+    p.style.left = (pw * 0.35 + Math.random() * pw * 0.2) + 'px';
+    p.style.top = (paper.clientHeight * 0.3 + Math.random() * paper.clientHeight * 0.2) + 'px';
+  };
+  paper.appendChild(p);
+  select(p);
+  pieceCount++;
+  if (pieceCount >= 4) wm.classList.add('on');
+}
+
+for (const n of names) {
+  const b = document.createElement('button');
+  const im = document.createElement('img');
+  im.src = 'collage/' + n;
+  im.alt = 'piece';
+  b.appendChild(im);
+  b.addEventListener('click', () => addPiece(n));
+  tray.appendChild(b);
+}
+
+function centerOf(p) {
+  return {
+    x: p.offsetLeft + p.offsetWidth / 2,
+    y: p.offsetTop + p.offsetHeight / 2
+  };
+}
+
+paper.addEventListener('pointerdown', (e) => {
+  const grip = e.target.closest('.grip');
+  const piece = e.target.closest('.piece');
+  if (!piece) { select(null); return; }
+  select(piece);
+  const rect = paper.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  if (grip && grip.dataset.kind === 'bin') {
+    piece.remove(); selected = null; return;
+  }
+  if (grip && grip.dataset.kind === 'size') {
+    const c = centerOf(piece);
+    action = { kind: 'size', piece, startDist: Math.hypot(px - c.x, py - c.y), startW: piece.offsetWidth };
+  } else if (grip && grip.dataset.kind === 'spin') {
+    const c = centerOf(piece);
+    action = { kind: 'spin', piece, c, startAng: Math.atan2(py - c.y, px - c.x), baseAng: parseFloat(piece.dataset.ang) };
+  } else {
+    action = { kind: 'move', piece, offX: px - piece.offsetLeft, offY: py - piece.offsetTop };
+  }
+  paper.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+
+paper.addEventListener('pointermove', (e) => {
+  if (!action) return;
+  const rect = paper.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const p = action.piece;
+  if (action.kind === 'move') {
+    p.style.left = (px - action.offX) + 'px';
+    p.style.top = (py - action.offY) + 'px';
+  } else if (action.kind === 'size') {
+    const c = centerOf(p);
+    const d = Math.hypot(px - c.x, py - c.y);
+    const w = Math.max(34, Math.min(action.startW * (d / Math.max(action.startDist, 1)), paper.clientWidth));
+    const dw = w - p.offsetWidth;
+    const dh = dw * (p.offsetHeight / Math.max(p.offsetWidth, 1));
+    p.style.width = w + 'px';
+    p.style.left = (p.offsetLeft - dw / 2) + 'px';
+    p.style.top = (p.offsetTop - dh / 2) + 'px';
+  } else if (action.kind === 'spin') {
+    const a = Math.atan2(py - action.c.y, px - action.c.x);
+    const ang = action.baseAng + (a - action.startAng);
+    p.dataset.ang = String(ang);
+    p.style.transform = 'rotate(' + ang + 'rad)';
+  }
+});
+
+paper.addEventListener('pointerup', () => { action = null; });
+paper.addEventListener('pointercancel', () => { action = null; });
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  for (const p of [...paper.querySelectorAll('.piece')]) p.remove();
+  selected = null;
+  pieceCount = 0;
+  wm.classList.remove('on');
+});
+
+// saves a small copy of the picture with the credit line on it.
+// kept deliberately small and soft - the real art is the real prints.
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const scale = 800 / paper.clientWidth;
+  const cv = document.createElement('canvas');
+  cv.width = 800;
+  cv.height = Math.round(paper.clientHeight * scale);
+  const cx = cv.getContext('2d');
+  cx.fillStyle = '#fdfcf9';
+  cx.fillRect(0, 0, cv.width, cv.height);
+  for (const p of paper.querySelectorAll('.piece')) {
+    const img = p.querySelector('img');
+    const w = p.offsetWidth * scale, h = p.offsetHeight * scale;
+    const x = (p.offsetLeft + p.offsetWidth / 2) * scale;
+    const y = (p.offsetTop + p.offsetHeight / 2) * scale;
+    cx.save();
+    cx.translate(x, y);
+    cx.rotate(parseFloat(p.dataset.ang) || 0);
+    cx.shadowColor = 'rgba(26, 43, 84, 0.4)';
+    cx.shadowBlur = 6;
+    cx.drawImage(img, -w / 2, -h / 2, w, h);
+    cx.restore();
+  }
+  cx.fillStyle = 'rgba(253, 252, 249, 0.85)';
+  cx.fillRect(0, cv.height - 30, cv.width, 30);
+  cx.fillStyle = '#2a3550';
+  cx.font = '14px Verdana';
+  cx.textAlign = 'center';
+  cx.fillText('Made with original art by Jane Yates © 2025 · janeyates.co.uk', cv.width / 2, cv.height - 10);
+  const a = document.createElement('a');
+  a.href = cv.toDataURL('image/jpeg', 0.55);
+  a.download = 'my-cyanotype-collage.jpg';
+  a.click();
+});
+</script>
+
+</body>
+</html>
