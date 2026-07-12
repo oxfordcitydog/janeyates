@@ -20,7 +20,8 @@
   #intro { font-size: 13px; margin: 0; text-align: center; max-width: 560px; }
   #intro a { color: #2a5aa8; }
   #paper {
-    position: relative; background: #fdfcf9;
+    position: relative; background: #10265c;
+    background-image: url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="230" height="170"%3E%3Ctext x="10" y="95" fill="rgba(238,241,246,0.08)" font-family="Verdana" font-size="16" transform="rotate(-20 115 85)"%3Ejaneyates.co.uk%3C/text%3E%3C/svg%3E');
     box-shadow: 0 6px 24px rgba(42, 53, 80, 0.25);
     border: 1px solid #d8dce6;
     touch-action: none; overflow: hidden;
@@ -31,11 +32,11 @@
   }
   .piece img {
     width: 100%; height: auto; display: block;
-    filter: drop-shadow(0 2px 6px rgba(26, 43, 84, 0.45));
+    filter: drop-shadow(0 2px 6px rgba(2, 10, 30, 0.6));
     pointer-events: none;
     -webkit-user-drag: none; user-select: none;
   }
-  .piece.sel { outline: 2px dashed #2a5aa8; outline-offset: 4px; }
+  .piece.sel { outline: 2px dashed #eef1f6; outline-offset: 4px; }
   .grip {
     position: absolute; width: 26px; height: 26px; border-radius: 50%;
     background: #ffffff; border: 2px solid #2a5aa8;
@@ -48,10 +49,10 @@
   .grip.bin  { right: -16px; top: -16px; cursor: pointer; }
   #wm {
     position: absolute; right: 10px; bottom: 8px;
-    font-size: 11px; color: rgba(42, 53, 80, 0.75);
-    background: rgba(253, 252, 249, 0.85);
+    font-size: 11px; color: rgba(238, 241, 246, 0.9);
+    background: rgba(8, 20, 46, 0.55);
     padding: 3px 10px; border-radius: 10px;
-    opacity: 0; transition: opacity 1.5s; pointer-events: none;
+    opacity: 1; pointer-events: none;
   }
   #wm.on { opacity: 1; }
   #tray {
@@ -81,8 +82,8 @@
   <h1>Cyanotype Collage</h1>
   <p id="intro">Make your own picture from pieces of my cyanotype prints.
      Tap a piece below to add it, drag it around, and use the little circles
-     to resize, turn or remove it. Real prints live in
-     <a href="index.html">the gallery</a>.</p>
+     to resize, turn or remove it. Buy genuine, unique one-off prints in
+     <a href="index.html">my gallery</a>.</p>
   <div id="paper">
     <div id="wm">Made with original art by Jane Yates &#169; 2025 &#183; janeyates.co.uk</div>
   </div>
@@ -224,8 +225,20 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   cv.width = 800;
   cv.height = Math.round(paper.clientHeight * scale);
   const cx = cv.getContext('2d');
-  cx.fillStyle = '#fdfcf9';
+  cx.fillStyle = '#10265c';
   cx.fillRect(0, 0, cv.width, cv.height);
+  // faint repeating watermark across the whole picture
+  cx.save();
+  cx.globalAlpha = 0.08;
+  cx.fillStyle = '#eef1f6';
+  cx.font = '18px Verdana';
+  cx.rotate(-0.35);
+  for (let wy = -cv.height; wy < cv.height * 1.5; wy += 130) {
+    for (let wx = -cv.width; wx < cv.width * 1.5; wx += 260) {
+      cx.fillText('janeyates.co.uk', wx, wy);
+    }
+  }
+  cx.restore();
   for (const p of paper.querySelectorAll('.piece')) {
     const img = p.querySelector('img');
     const w = p.offsetWidth * scale, h = p.offsetHeight * scale;
@@ -234,14 +247,14 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     cx.save();
     cx.translate(x, y);
     cx.rotate(parseFloat(p.dataset.ang) || 0);
-    cx.shadowColor = 'rgba(26, 43, 84, 0.4)';
+    cx.shadowColor = 'rgba(2, 10, 30, 0.5)';
     cx.shadowBlur = 6;
     cx.drawImage(img, -w / 2, -h / 2, w, h);
     cx.restore();
   }
-  cx.fillStyle = 'rgba(253, 252, 249, 0.85)';
+  cx.fillStyle = 'rgba(8, 20, 46, 0.75)';
   cx.fillRect(0, cv.height - 30, cv.width, 30);
-  cx.fillStyle = '#2a3550';
+  cx.fillStyle = '#eef1f6';
   cx.font = '14px Verdana';
   cx.textAlign = 'center';
   cx.fillText('Made with original art by Jane Yates © 2025 · janeyates.co.uk', cv.width / 2, cv.height - 10);
