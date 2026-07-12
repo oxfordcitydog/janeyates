@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Fun Disguises</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #000; overflow: hidden;
+    font-family: Verdana, sans-serif;
+  }
+  #cam, #paint {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .mirrored #cam, .mirrored #paint { transform: scaleX(-1); }
+  #welcome {
+    position: fixed; inset: 0;
+    background: linear-gradient(#1a1a2e, #0f0f1a);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 24px; z-index: 10;
+    overflow-y: auto;
+  }
+  #welcome h1 {
+    color: #ffe9a8; font-size: 28px; font-weight: normal;
+    margin: 0 0 18px 0;
+  }
+  #welcome p {
+    color: #c8c8dc; font-size: 17px; line-height: 1.6;
+    max-width: 420px; margin: 0 0 22px 0;
+  }
+  #startBtn {
+    font-family: Verdana, sans-serif; font-size: 22px;
+    padding: 18px 40px; border: none; border-radius: 40px;
+    background: #ffe9a8; color: #1a1a2e; cursor: pointer;
+  }
+  #status {
+    position: fixed; left: 50%; bottom: 130px; transform: translateX(-50%);
+    background: rgba(20, 20, 40, 0.85); color: #ffe9a8;
+    font-size: 16px; padding: 10px 22px; border-radius: 20px;
+    z-index: 5; max-width: 85%; text-align: center;
+  }
+  #controls {
+    position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+    display: none; flex-direction: column; align-items: center; gap: 8px;
+    z-index: 5; max-width: 96%;
+  }
+  #tray {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+    background: rgba(20, 20, 40, 0.75); border-radius: 18px;
+    padding: 8px 10px;
+  }
+  #tray button {
+    font-size: 26px; line-height: 1;
+    padding: 6px 10px; border: none; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12); cursor: pointer;
+  }
+  #tray button.worn { background: rgba(255, 233, 168, 0.85); }
+  #row2 { display: flex; gap: 10px; }
+  #row2 button {
+    font-family: Verdana, sans-serif; font-size: 16px;
+    padding: 10px 22px; border: none; border-radius: 30px;
+    background: rgba(255, 233, 168, 0.9); color: #1a1a2e;
+    cursor: pointer; white-space: nowrap;
+  }
+</style>
+</head>
+<body>
 
+<video id="cam" autoplay muted playsinline></video>
+<canvas id="paint"></canvas>
+
+<div id="welcome">
+  <h1>Fun Disguises</h1>
+  <p>Point the camera at a face and dress it up.
+     Glasses, hats, noses and more stick to faces by themselves
+     and follow them as they move.
+     An idea by Jane Yates.
+     Nothing is recorded and nothing leaves your device.</p>
+  <p>The page starts with the selfie camera so you can disguise yourself.
+     Tap the pieces at the bottom to put them on or take them off.
+     On a video call, share this window with everyone
+     and you will appear in disguise.</p>
+  <button id="startBtn">Start dressing up</button>
+</div>
+
+<div id="status" style="display:none"></div>
+<div id="controls">
+  <div id="tray"></div>
+  <div id="row2">
+    <button id="flipBtn">Flip camera</button>
+    <button id="clearBtn">Take it all off</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2/dist/pose-detection.min.js"></script>
+<script>
+const cam = document.getElementById('cam');
+const paint = document.getElementById('paint');
+const ctx = paint.getContext('2d');
+const statusBox = document.getElementById('status');
+const controls = document.getElementById('controls');
+const tray = document.getElementById('tray');
+const flipBtn = document.getElementById('flipBtn');
+const clearBtn = document.getElementById('clearBtn');
+
+// each piece knows which part of the face it lives on (its slot),
+// how big it is compared to the face, and where it sits, measured in
+// eye-widths from the middle of the eyes (minus numbers are higher up).
+// hats give the spot for their bottom edge; everything else gives its middle.
+// one piece per slot at a time.
+const pieces = [
+  { emoji: '\u{1F453}', slot: 'eyes', scale: 2.5, at: 0 },                 // glasses
+  { emoji: '\u{1F576}\u{FE0F}', slot: 'eyes', scale: 2.5, at: 0 },         // dark glasses
+  { emoji: '\u{1F978}', slot: 'face', scale: 3.3, at: 0.2 },               // disguise face
+  { emoji: '\u{1F921}', slot: 'face', scale: 3.4, at: 0.2 },               // clown face
+  { emoji: '\u{1F534}', slot: 'nose', scale: 0.75, at: 0.55 },             // red nose
+  { emoji: '\u{1F43D}', slot: 'nose', scale: 0.85, at: 0.55 },             // pig nose
+  { emoji: '\u{1F3A9}', slot: 'head', scale: 2.6, at: -0.55 },             // top hat
+  { emoji: '\u{1F451}', slot: 'head', scale: 2.4, at: -0.85 },             // crown
+  { emoji: '\u{1F9E2}', slot: 'head', scale: 2.6, at: -0.6 },              // cap
+  { emoji: '\u{1F380}', slot: 'head', scale: 2.0, at: -1.05 }              // bow
+];
+
+// what is being worn right now, one piece per slot
+const worn = { eyes: null, face: null, nose: null, head: null };
+
+let detector = null;
+let facing = 'user';          // selfie camera first; flip button swaps
+let stream = null;
+const faces = new Map();      // remembered faces, so pieces glide instead of jumping
+
+function say(msg) {
+  statusBox.style.display = msg ? 'block' : 'none';
+  statusBox.textContent = msg;
+}
+
+async function openCamera() {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  cam.srcObject = null;
+  try {
+    // firmly ask for the chosen camera - phones can ignore a gentle request
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: facing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+  } catch (e) {
+    // no such camera on this device (like a laptop) - take whatever there is
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+  }
+  cam.srcObject = stream;
+  await new Promise(res => { cam.onloadedmetadata = res; });
+  await cam.play();
+  paint.width = cam.videoWidth;
+  paint.height = cam.videoHeight;
+  // selfie camera shows mirrored, like a mirror should
+  document.body.classList.toggle('mirrored', facing === 'user');
+}
+
+async function start() {
+  document.getElementById('welcome').remove();
+  try {
+    say('asking for the camera...');
+    await openCamera();
+    controls.style.display = 'flex';
+  } catch (err) {
+    say('the camera said no. check camera permission for this page and reload.');
+    return;
+  }
+  try {
+    say('loading the dressing-up box... this takes a few seconds the first time');
+    await tf.setBackend('webgl');
+    detector = await poseDetection.createDetector(
+      poseDetection.SupportedModels.MoveNet,
+      { modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING, enableTracking: true }
+    );
+  } catch (err) {
+    say('the dressing-up box could not load. is the internet connected? ' + err.message);
+    return;
+  }
+  say('tap a piece at the bottom to put it on');
+  setTimeout(() => say(''), 6000);
+  loop();
+}
+
+flipBtn.addEventListener('click', async () => {
+  facing = (facing === 'user') ? 'environment' : 'user';
+  try { await openCamera(); } catch (e) { say('could not flip the camera'); }
+});
+
+clearBtn.addEventListener('click', () => {
+  for (const slot in worn) worn[slot] = null;
+  for (const b of tray.children) b.classList.remove('worn');
+});
+
+for (const piece of pieces) {
+  const b = document.createElement('button');
+  b.textContent = piece.emoji;
+  b.addEventListener('click', () => {
+    // putting a piece on takes off whatever else was in that spot
+    worn[piece.slot] = (worn[piece.slot] === piece) ? null : piece;
+    for (let i = 0; i < pieces.length; i++) {
+      tray.children[i].classList.toggle('worn', worn[pieces[i].slot] === pieces[i]);
+    }
+  });
+  tray.appendChild(b);
+}
+
+async function loop() {
+  if (detector && cam.readyState >= 2) {
+    let poses = [];
+    try { poses = await detector.estimatePoses(cam); } catch (e) {}
+    ctx.clearRect(0, 0, paint.width, paint.height);
+    const seen = new Set();
+    for (const pose of poses) {
+      const f = faceInfo(pose);
+      if (f) { seen.add(f.id); drawFace(f); }
+    }
+    // forget faces that have left the picture
+    for (const id of faces.keys()) {
+      const f = faces.get(id);
+      if (!seen.has(id) && performance.now() - f.last > 800) faces.delete(id);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+function faceInfo(pose) {
+  const kp = pose.keypoints;
+  const nose = kp[0], le = kp[1], re = kp[2], lear = kp[3], rear = kp[4];
+  const ok = p => p && p.score > 0.3;
+  if (!ok(nose)) return null;
+
+  // how wide the face is: eye to eye is best, ear to ear will do
+  let a = null, b = null;
+  let usedEars = false;
+  if (ok(le) && ok(re)) { a = le; b = re; }
+  else if (ok(lear) && ok(rear)) { a = lear; b = rear; usedEars = true; }
+  else return null;
+
+  let width = Math.hypot(a.x - b.x, a.y - b.y);
+  if (usedEars) width *= 0.62;                 // ears are further apart than eyes
+  if (width < 8) return null;                  // too small or sideways-on
+
+  // eyes sit left and right of the nose - work out the face's true tilt
+  let tilt = Math.atan2(a.y - b.y, a.x - b.x);
+
+  const raw = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: width, tilt: tilt };
+
+  // glide towards the new position instead of jumping, so pieces sit calmly
+  const id = (pose.id !== undefined) ? pose.id : 0;
+  let s = faces.get(id);
+  if (!s) { s = { ...raw }; faces.set(id, s); }
+  const g = 0.35;
+  s.x += (raw.x - s.x) * g;
+  s.y += (raw.y - s.y) * g;
+  s.w += (raw.w - s.w) * g;
+  let dt = raw.tilt - s.tilt;
+  if (dt > Math.PI) dt -= Math.PI * 2;
+  if (dt < -Math.PI) dt += Math.PI * 2;
+  s.tilt += dt * g;
+  s.last = performance.now();
+  s.id = id;
+  return s;
+}
+
+function drawFace(f) {
+  // draw the pieces from the back forwards: face cover, eyes, nose, hat
+  for (const slot of ['face', 'eyes', 'nose', 'head']) {
+    const piece = worn[slot];
+    if (!piece) continue;
+    const size = f.w * piece.scale;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.rotate(f.tilt);
+    ctx.font = size + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // emoji pictures sit unevenly in their invisible text box, so measure
+    // the real drawn shape and place that where the piece belongs
+    const m = ctx.measureText(piece.emoji);
+    const inkMid = (m.actualBoundingBoxDescent - m.actualBoundingBoxAscent) / 2;
+    const inkHeight = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    let target = f.w * piece.at;
+    if (slot === 'head') target -= inkHeight / 2;   // 'at' is the hat's bottom edge
+    ctx.fillText(piece.emoji, 0, target - inkMid);
+    ctx.restore();
+  }
+}
+
+document.getElementById('startBtn').addEventListener('click', start);
+</script>
+
+</body>
+</html>
