@@ -37,6 +37,12 @@
     -webkit-user-drag: none; user-select: none;
   }
   .piece.sel { outline: 2px dashed #eef1f6; outline-offset: 4px; }
+  /* small blue watermark stamped across every piece */
+  .piece::after {
+    content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    background: url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"%3E%3Ctext x="50" y="54" fill="rgba(16,38,92,0.5)" font-family="Verdana" font-size="9" text-anchor="middle" transform="rotate(-15 50 50)"%3Ejaneyates.co.uk%3C/text%3E%3C/svg%3E') center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
   .grip {
     position: absolute; width: 26px; height: 26px; border-radius: 50%;
     background: #ffffff; border: 2px solid #2a5aa8;
@@ -82,15 +88,15 @@
   <h1>Cyanotype Collage</h1>
   <p id="intro">Make your own picture from pieces of my cyanotype prints.
      Tap a piece below to add it, drag it around, and use the little circles
-     to resize, turn or remove it. Buy genuine, unique one-off prints in
-     <a href="index.html">my gallery</a>.</p>
+     to resize, turn or remove it. Buy a real original one-off cyanotype,
+     handmade by Jane, direct from <a href="index.html">the gallery</a>
+     &mdash; free postage within the UK (ships to UK only).</p>
   <div id="paper">
     <div id="wm">Made with original art by Jane Yates &#169; 2025 &#183; janeyates.co.uk</div>
   </div>
   <div id="tray"></div>
   <div id="row2">
-    <button id="saveBtn">Save my picture</button>
-    <button id="clearBtn" class="quiet">Start again</button>
+    <button id="clearBtn">Start again</button>
   </div>
 </div>
 
@@ -217,52 +223,8 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   wm.classList.remove('on');
 });
 
-// saves a small copy of the picture with the credit line on it.
-// kept deliberately small and soft - the real art is the real prints.
-document.getElementById('saveBtn').addEventListener('click', () => {
-  const scale = 800 / paper.clientWidth;
-  const cv = document.createElement('canvas');
-  cv.width = 800;
-  cv.height = Math.round(paper.clientHeight * scale);
-  const cx = cv.getContext('2d');
-  cx.fillStyle = '#10265c';
-  cx.fillRect(0, 0, cv.width, cv.height);
-  // faint repeating watermark across the whole picture
-  cx.save();
-  cx.globalAlpha = 0.08;
-  cx.fillStyle = '#eef1f6';
-  cx.font = '18px Verdana';
-  cx.rotate(-0.35);
-  for (let wy = -cv.height; wy < cv.height * 1.5; wy += 130) {
-    for (let wx = -cv.width; wx < cv.width * 1.5; wx += 260) {
-      cx.fillText('janeyates.co.uk', wx, wy);
-    }
-  }
-  cx.restore();
-  for (const p of paper.querySelectorAll('.piece')) {
-    const img = p.querySelector('img');
-    const w = p.offsetWidth * scale, h = p.offsetHeight * scale;
-    const x = (p.offsetLeft + p.offsetWidth / 2) * scale;
-    const y = (p.offsetTop + p.offsetHeight / 2) * scale;
-    cx.save();
-    cx.translate(x, y);
-    cx.rotate(parseFloat(p.dataset.ang) || 0);
-    cx.shadowColor = 'rgba(2, 10, 30, 0.5)';
-    cx.shadowBlur = 6;
-    cx.drawImage(img, -w / 2, -h / 2, w, h);
-    cx.restore();
-  }
-  cx.fillStyle = 'rgba(8, 20, 46, 0.75)';
-  cx.fillRect(0, cv.height - 30, cv.width, 30);
-  cx.fillStyle = '#eef1f6';
-  cx.font = '14px Verdana';
-  cx.textAlign = 'center';
-  cx.fillText('Made with original art by Jane Yates © 2025 · janeyates.co.uk', cv.width / 2, cv.height - 10);
-  const a = document.createElement('a');
-  a.href = cv.toDataURL('image/jpeg', 0.55);
-  a.download = 'my-cyanotype-collage.jpg';
-  a.click();
-});
+// (the save-picture feature was removed on purpose -
+//  the real art only exists as Jane's original prints)
 </script>
 
 </body>
