@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -11,72 +11,13 @@
     background: #000; overflow: hidden;
     font-family: Verdana, sans-serif;
   }
-  /* the room and the vintage telly the camera lives inside */
-  #room {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(ellipse at 50% 30%, #23233c, #0b0b14);
-  }
-  #tvbox {
-    display: flex; gap: 12px;
-    background: linear-gradient(#8a5527, #6b3f1c);
-    border: 4px solid #5a3416; border-radius: 18px;
-    padding: 14px; width: min(96vw, 780px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-  }
-  #bezel {
-    position: relative; flex: 1; aspect-ratio: 4 / 3;
-    background: #101010; border: 7px solid #20140a;
-    border-radius: 14px; overflow: hidden;
-  }
-  #panel {
-    width: 84px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 14px;
-  }
-  .knob {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: #3a3a3a; border: 3px solid #d8d8d8; position: relative;
-  }
-  .knob::after {
-    content: ""; position: absolute; left: 50%; top: 4px;
-    width: 4px; height: 13px; margin-left: -2px;
-    background: #d8d8d8; border-radius: 2px;
-  }
-  #speaker {
-    width: 58px; height: 80px; border-radius: 8px;
-    background: repeating-linear-gradient(0deg, #4a2c12 0 6px, #3a2210 6px 12px);
-  }
-  @media (max-width: 480px) {
-    #panel { width: 54px; gap: 10px; }
-    .knob { width: 32px; height: 32px; }
-    #speaker { width: 40px; height: 58px; }
-  }
   #cam, #paint {
-    position: absolute; inset: 0;
+    position: fixed; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
   }
   #paint { touch-action: none; }
   .mirrored #cam, .mirrored #paint { transform: scaleX(-1); }
-  /* the test card: colour bars, grey blocks and the circle */
-  #testcard {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    opacity: 1; transition: opacity 1.2s;
-  }
-  #testcard.off { opacity: 0; pointer-events: none; }
-  #tcbars { flex: 4; display: flex; }
-  #tcbars div { flex: 1; }
-  #tcgreys { flex: 1; display: flex; }
-  #tcgreys div { flex: 1; }
-  #tccircle {
-    position: absolute; left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
-    width: 38%; aspect-ratio: 1 / 1; border-radius: 50%;
-    background: #14141e; border: 5px solid #e8e8e8;
-    display: flex; align-items: center; justify-content: center;
-    color: #e8e8e8; font-size: clamp(14px, 4vw, 24px);
-  }
   #welcome {
     position: fixed; inset: 0;
     background: linear-gradient(#1a1a2e, #0f0f1a);
@@ -133,54 +74,22 @@
 </head>
 <body>
 
-<div id="room">
-  <div id="tvbox">
-    <div id="bezel">
-      <video id="cam" autoplay muted playsinline></video>
-      <canvas id="paint"></canvas>
-      <div id="testcard">
-        <div id="tcbars">
-          <div style="background:#c2c22e"></div>
-          <div style="background:#2ec2c2"></div>
-          <div style="background:#2eb02e"></div>
-          <div style="background:#c22ec2"></div>
-          <div style="background:#c22e2e"></div>
-          <div style="background:#2e2ec2"></div>
-        </div>
-        <div id="tcgreys">
-          <div style="background:#101010"></div>
-          <div style="background:#f0f0f0"></div>
-          <div style="background:#404040"></div>
-          <div style="background:#808080"></div>
-          <div style="background:#b8b8b8"></div>
-          <div style="background:#101010"></div>
-        </div>
-        <div id="tccircle">TV ONE</div>
-      </div>
-    </div>
-    <div id="panel">
-      <div class="knob"></div>
-      <div class="knob"></div>
-      <div id="speaker"></div>
-    </div>
-  </div>
-</div>
+<video id="cam" autoplay muted playsinline></video>
+<canvas id="paint"></canvas>
 
 <div id="welcome">
   <h1>Fun Disguises</h1>
-  <p>You appear on a vintage telly, and you dress up.
+  <p>Point the camera at a face and dress it up.
      Glasses, hats, beards, moustaches and noses stick to faces
      by themselves and follow them as they move.
-     Out-of-the-gogglebox thinking by Jane Yates.
-     Works on phones, tablets and computers.
+     An idea by Jane Yates.
      Nothing is recorded and nothing leaves your device.</p>
-  <p>The telly starts with its test card showing, then your camera
-     appears on the screen. Tap the pieces at the bottom to put them
-     on or take them off. If a piece sits a little off, press it and
-     slide it into place. On a video call, turn your call camera off,
-     share this window with everyone, and you will appear in disguise
-     on an old television.</p>
-  <button id="startBtn">Switch the telly on</button>
+  <p>The page starts with the selfie camera so you can disguise yourself.
+     Tap the pieces at the bottom to put them on or take them off.
+     If a piece sits a little off, press it and slide it into place.
+     On a video call, turn your call camera off, share this window
+     with everyone, and you will appear in disguise.</p>
+  <button id="startBtn">Start dressing up</button>
 </div>
 
 <div id="status" style="display:none"></div>
@@ -189,7 +98,6 @@
   <div id="row2">
     <button id="flipBtn">Flip camera</button>
     <button id="clearBtn">Take it all off</button>
-    <button id="cardBtn">Test card</button>
   </div>
 </div>
 
@@ -204,8 +112,6 @@ const controls = document.getElementById('controls');
 const tray = document.getElementById('tray');
 const flipBtn = document.getElementById('flipBtn');
 const clearBtn = document.getElementById('clearBtn');
-const cardBtn = document.getElementById('cardBtn');
-const testcard = document.getElementById('testcard');
 
 // ---- the hand-drawn pieces: moustaches and beards ----
 // all drawn around the middle of the eyes, sized in eye-widths (w),
@@ -376,8 +282,6 @@ async function start() {
     say('the dressing-up box could not load. is the internet connected? ' + err.message);
     return;
   }
-  // the telly warms up: the test card fades away and the camera shows
-  testcard.classList.add('off');
   say('tap a piece to put it on. press and slide a piece to move it.');
   setTimeout(() => say(''), 7000);
   loop();
@@ -394,10 +298,6 @@ clearBtn.addEventListener('click', () => {
     worn[slot] = null;
   }
   for (const b of tray.children) b.classList.remove('worn');
-});
-
-cardBtn.addEventListener('click', () => {
-  testcard.classList.toggle('off');
 });
 
 // the tray: emoji pieces show themselves, hand-drawn pieces get a
@@ -533,18 +433,16 @@ function rememberSpot(piece, f, a, b, r) {
 }
 
 function toCanvasPoint(px, py) {
-  // the picture fills the telly screen by cropping (object-fit cover),
+  // the picture fills the screen by cropping (object-fit cover),
   // and the selfie view is mirrored, so undo both to find the
   // canvas spot under the finger
-  const rect = paint.getBoundingClientRect();
-  const cssW = rect.width, cssH = rect.height;
-  const lx = px - rect.left, ly = py - rect.top;
+  const cssW = window.innerWidth, cssH = window.innerHeight;
   const s = Math.max(cssW / paint.width, cssH / paint.height);
   const ox = (cssW - paint.width * s) / 2;
   const oy = (cssH - paint.height * s) / 2;
-  let sx = lx;
-  if (document.body.classList.contains('mirrored')) sx = cssW - lx;
-  return { x: (sx - ox) / s, y: (ly - oy) / s, s: s };
+  let sx = px;
+  if (document.body.classList.contains('mirrored')) sx = cssW - px;
+  return { x: (sx - ox) / s, y: (py - oy) / s, s: s };
 }
 
 let held = null;   // the piece being slid right now
