@@ -16,6 +16,7 @@
     width: 100%; height: 100%;
     object-fit: cover;
   }
+  #paint { touch-action: none; }
   .mirrored #cam, .mirrored #paint { transform: scaleX(-1); }
   #welcome {
     position: fixed; inset: 0;
@@ -56,7 +57,9 @@
   }
   #tray button {
     font-size: 26px; line-height: 1;
-    padding: 6px 10px; border: none; border-radius: 12px;
+    width: 46px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; border: none; border-radius: 12px;
     background: rgba(255, 255, 255, 0.12); cursor: pointer;
   }
   #tray button.worn { background: rgba(255, 233, 168, 0.85); }
@@ -77,14 +80,15 @@
 <div id="welcome">
   <h1>Fun Disguises</h1>
   <p>Point the camera at a face and dress it up.
-     Glasses, hats, noses and more stick to faces by themselves
-     and follow them as they move.
+     Glasses, hats, beards, moustaches and noses stick to faces
+     by themselves and follow them as they move.
      An idea by Jane Yates.
      Nothing is recorded and nothing leaves your device.</p>
   <p>The page starts with the selfie camera so you can disguise yourself.
      Tap the pieces at the bottom to put them on or take them off.
-     On a video call, share this window with everyone
-     and you will appear in disguise.</p>
+     If a piece sits a little off, press it and slide it into place.
+     On a video call, turn your call camera off, share this window
+     with everyone, and you will appear in disguise.</p>
   <button id="startBtn">Start dressing up</button>
 </div>
 
@@ -109,26 +113,118 @@ const tray = document.getElementById('tray');
 const flipBtn = document.getElementById('flipBtn');
 const clearBtn = document.getElementById('clearBtn');
 
-// each piece knows which part of the face it lives on (its slot),
-// how big it is compared to the face, and where it sits, measured in
-// eye-widths from the middle of the eyes (minus numbers are higher up).
-// hats give the spot for their bottom edge; everything else gives its middle.
-// one piece per slot at a time.
+// ---- the hand-drawn pieces: moustaches and beards ----
+// all drawn around the middle of the eyes, sized in eye-widths (w),
+// with down the screen being the positive way, like the canvas itself
+
+function paintClassicTash(c, w) {
+  // a neat gentleman's moustache with curled tips
+  c.fillStyle = '#3b2314';
+  for (const s of [-1, 1]) {
+    c.beginPath();
+    c.moveTo(0, 0.68 * w);
+    c.quadraticCurveTo(s * 0.25 * w, 0.56 * w, s * 0.55 * w, 0.64 * w);
+    c.quadraticCurveTo(s * 0.78 * w, 0.70 * w, s * 0.74 * w, 0.52 * w);
+    c.quadraticCurveTo(s * 0.62 * w, 0.80 * w, s * 0.20 * w, 0.83 * w);
+    c.quadraticCurveTo(0, 0.80 * w, 0, 0.68 * w);
+    c.closePath();
+    c.fill();
+  }
+}
+
+function paintWalrusTash(c, w) {
+  // a big bushy walrus moustache that droops at the sides
+  c.fillStyle = '#8b8b8b';
+  c.beginPath();
+  c.moveTo(0, 0.60 * w);
+  c.quadraticCurveTo(0.45 * w, 0.55 * w, 0.72 * w, 0.75 * w);
+  c.quadraticCurveTo(0.80 * w, 0.85 * w, 0.68 * w, 1.10 * w);
+  c.quadraticCurveTo(0.55 * w, 0.95 * w, 0.30 * w, 0.95 * w);
+  c.quadraticCurveTo(0, 1.00 * w, -0.30 * w, 0.95 * w);
+  c.quadraticCurveTo(-0.55 * w, 0.95 * w, -0.68 * w, 1.10 * w);
+  c.quadraticCurveTo(-0.80 * w, 0.85 * w, -0.72 * w, 0.75 * w);
+  c.quadraticCurveTo(-0.45 * w, 0.55 * w, 0, 0.60 * w);
+  c.closePath();
+  c.fill();
+}
+
+function paintGoatee(c, w) {
+  // a small pointy chin beard with a soul patch
+  c.fillStyle = '#241a12';
+  c.beginPath();
+  c.ellipse(0, 1.02 * w, 0.13 * w, 0.09 * w, 0, 0, Math.PI * 2);
+  c.fill();
+  c.beginPath();
+  c.moveTo(-0.30 * w, 1.12 * w);
+  c.quadraticCurveTo(-0.32 * w, 1.45 * w, 0, 1.62 * w);
+  c.quadraticCurveTo(0.32 * w, 1.45 * w, 0.30 * w, 1.12 * w);
+  c.quadraticCurveTo(0.18 * w, 1.28 * w, 0, 1.30 * w);
+  c.quadraticCurveTo(-0.18 * w, 1.28 * w, -0.30 * w, 1.12 * w);
+  c.closePath();
+  c.fill();
+}
+
+function paintFullBeard(c, w) {
+  // a proper full beard hugging the jaw, mouth left free
+  c.fillStyle = '#54371c';
+  c.beginPath();
+  c.moveTo(-0.88 * w, 0.15 * w);
+  c.quadraticCurveTo(-0.95 * w, 0.95 * w, -0.45 * w, 1.55 * w);
+  c.quadraticCurveTo(0, 1.85 * w, 0.45 * w, 1.55 * w);
+  c.quadraticCurveTo(0.95 * w, 0.95 * w, 0.88 * w, 0.15 * w);
+  c.quadraticCurveTo(0.60 * w, 0.45 * w, 0.42 * w, 0.60 * w);
+  c.quadraticCurveTo(0, 0.72 * w, -0.42 * w, 0.60 * w);
+  c.quadraticCurveTo(-0.60 * w, 0.45 * w, -0.88 * w, 0.15 * w);
+  c.closePath();
+  c.ellipse(0, 1.0 * w, 0.34 * w, 0.20 * w, 0, 0, Math.PI * 2);
+  c.fill('evenodd');
+}
+
+function paintSantaBeard(c, w) {
+  // a long white wizard beard with a wavy bottom
+  c.fillStyle = '#f4f4f4';
+  c.beginPath();
+  c.moveTo(-0.88 * w, 0.15 * w);
+  c.quadraticCurveTo(-1.00 * w, 1.20 * w, -0.62 * w, 1.90 * w);
+  c.quadraticCurveTo(-0.50 * w, 2.30 * w, -0.28 * w, 2.10 * w);
+  c.quadraticCurveTo(-0.18 * w, 2.55 * w, 0, 2.60 * w);
+  c.quadraticCurveTo(0.18 * w, 2.55 * w, 0.28 * w, 2.10 * w);
+  c.quadraticCurveTo(0.50 * w, 2.30 * w, 0.62 * w, 1.90 * w);
+  c.quadraticCurveTo(1.00 * w, 1.20 * w, 0.88 * w, 0.15 * w);
+  c.quadraticCurveTo(0.60 * w, 0.45 * w, 0.42 * w, 0.60 * w);
+  c.quadraticCurveTo(0, 0.72 * w, -0.42 * w, 0.60 * w);
+  c.quadraticCurveTo(-0.60 * w, 0.45 * w, -0.88 * w, 0.15 * w);
+  c.closePath();
+  c.ellipse(0, 1.0 * w, 0.34 * w, 0.20 * w, 0, 0, Math.PI * 2);
+  c.fill('evenodd');
+}
+
+// each piece lives on one part of the face (its slot) and only one
+// piece per slot is worn at a time. emoji pieces give their size and
+// where they sit in eye-widths from the middle of the eyes (minus is
+// higher up; hats give the spot for their bottom edge, the rest their
+// middle). hand-drawn pieces bring their own paint recipe instead,
+// plus a middle and reach so fingers can grab them. dx and dy remember
+// how far the wearer has slid a piece from its usual spot.
 const pieces = [
   { emoji: '\u{1F453}', slot: 'eyes', scale: 2.5, at: 0 },                 // glasses
   { emoji: '\u{1F576}\u{FE0F}', slot: 'eyes', scale: 2.5, at: 0 },         // dark glasses
-  { emoji: '\u{1F978}', slot: 'face', scale: 3.3, at: 0.2 },               // disguise face
-  { emoji: '\u{1F921}', slot: 'face', scale: 3.4, at: 0.2 },               // clown face
   { emoji: '\u{1F534}', slot: 'nose', scale: 0.75, at: 0.55 },             // red nose
   { emoji: '\u{1F43D}', slot: 'nose', scale: 0.85, at: 0.55 },             // pig nose
+  { paint: paintClassicTash, slot: 'tash', mid: 0.7, reach: 0.8, iconW: 24, name: 'moustache' },
+  { paint: paintWalrusTash, slot: 'tash', mid: 0.85, reach: 0.9, iconW: 22, name: 'big moustache' },
+  { paint: paintGoatee, slot: 'chin', mid: 1.3, reach: 0.5, iconW: 22, name: 'goatee beard' },
+  { paint: paintFullBeard, slot: 'chin', mid: 1.0, reach: 1.0, iconW: 18, name: 'full beard' },
+  { paint: paintSantaBeard, slot: 'chin', mid: 1.35, reach: 1.4, iconW: 12, name: 'long white beard' },
   { emoji: '\u{1F3A9}', slot: 'head', scale: 2.6, at: -0.55 },             // top hat
   { emoji: '\u{1F451}', slot: 'head', scale: 2.4, at: -0.85 },             // crown
   { emoji: '\u{1F9E2}', slot: 'head', scale: 2.6, at: -0.6 },              // cap
   { emoji: '\u{1F380}', slot: 'head', scale: 2.0, at: -1.05 }              // bow
 ];
+for (const p of pieces) { p.dx = 0; p.dy = 0; }
 
 // what is being worn right now, one piece per slot
-const worn = { eyes: null, face: null, nose: null, head: null };
+const worn = { eyes: null, nose: null, tash: null, chin: null, head: null };
 
 let detector = null;
 let facing = 'user';          // selfie camera first; flip button swaps
@@ -186,8 +282,8 @@ async function start() {
     say('the dressing-up box could not load. is the internet connected? ' + err.message);
     return;
   }
-  say('tap a piece at the bottom to put it on');
-  setTimeout(() => say(''), 6000);
+  say('tap a piece to put it on. press and slide a piece to move it.');
+  setTimeout(() => say(''), 7000);
   loop();
 }
 
@@ -197,16 +293,34 @@ flipBtn.addEventListener('click', async () => {
 });
 
 clearBtn.addEventListener('click', () => {
-  for (const slot in worn) worn[slot] = null;
+  for (const slot in worn) {
+    if (worn[slot]) { worn[slot].dx = 0; worn[slot].dy = 0; }
+    worn[slot] = null;
+  }
   for (const b of tray.children) b.classList.remove('worn');
 });
 
+// the tray: emoji pieces show themselves, hand-drawn pieces get a
+// little painting of themselves on a tiny canvas
 for (const piece of pieces) {
   const b = document.createElement('button');
-  b.textContent = piece.emoji;
+  if (piece.emoji) {
+    b.textContent = piece.emoji;
+  } else {
+    const cv = document.createElement('canvas');
+    cv.width = 38; cv.height = 34;
+    const cc = cv.getContext('2d');
+    cc.translate(19, 17 - piece.mid * piece.iconW);
+    piece.paint(cc, piece.iconW);
+    b.appendChild(cv);
+    b.setAttribute('aria-label', piece.name);
+  }
   b.addEventListener('click', () => {
     // putting a piece on takes off whatever else was in that spot
-    worn[piece.slot] = (worn[piece.slot] === piece) ? null : piece;
+    const old = worn[piece.slot];
+    if (old) { old.dx = 0; old.dy = 0; }
+    worn[piece.slot] = (old === piece) ? null : piece;
+    if (worn[piece.slot]) { piece.dx = 0; piece.dy = 0; }
     for (let i = 0; i < pieces.length; i++) {
       tray.children[i].classList.toggle('worn', worn[pieces[i].slot] === pieces[i]);
     }
@@ -250,10 +364,12 @@ function faceInfo(pose) {
   if (usedEars) width *= 0.62;                 // ears are further apart than eyes
   if (width < 8) return null;                  // too small or sideways-on
 
-  // eyes sit left and right of the nose - work out the face's true tilt
-  let tilt = Math.atan2(a.y - b.y, a.x - b.x);
-
-  const raw = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: width, tilt: tilt };
+  const raw = {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+    w: width,
+    tilt: Math.atan2(a.y - b.y, a.x - b.x)
+  };
 
   // glide towards the new position instead of jumping, so pieces sit calmly
   const id = (pose.id !== undefined) ? pose.id : 0;
@@ -273,28 +389,96 @@ function faceInfo(pose) {
 }
 
 function drawFace(f) {
-  // draw the pieces from the back forwards: face cover, eyes, nose, hat
-  for (const slot of ['face', 'eyes', 'nose', 'head']) {
+  // draw the pieces from the back forwards: beard, moustache, eyes, nose, hat
+  for (const slot of ['chin', 'tash', 'eyes', 'nose', 'head']) {
     const piece = worn[slot];
     if (!piece) continue;
-    const size = f.w * piece.scale;
     ctx.save();
     ctx.translate(f.x, f.y);
     ctx.rotate(f.tilt);
-    ctx.font = size + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // emoji pictures sit unevenly in their invisible text box, so measure
-    // the real drawn shape and place that where the piece belongs
-    const m = ctx.measureText(piece.emoji);
-    const inkMid = (m.actualBoundingBoxDescent - m.actualBoundingBoxAscent) / 2;
-    const inkHeight = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
-    let target = f.w * piece.at;
-    if (slot === 'head') target -= inkHeight / 2;   // 'at' is the hat's bottom edge
-    ctx.fillText(piece.emoji, 0, target - inkMid);
+    if (piece.emoji) {
+      const size = f.w * piece.scale;
+      ctx.font = size + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      // emoji pictures sit unevenly in their invisible text box, so measure
+      // the real drawn shape and place that where the piece belongs
+      const m = ctx.measureText(piece.emoji);
+      const inkMid = (m.actualBoundingBoxDescent - m.actualBoundingBoxAscent) / 2;
+      const inkHeight = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+      let target = f.w * piece.at;
+      if (slot === 'head') target -= inkHeight / 2;   // 'at' is the hat's bottom edge
+      ctx.fillText(piece.emoji, piece.dx * f.w, target - inkMid + piece.dy * f.w);
+      // remember where it is on the canvas so a finger can grab it
+      rememberSpot(piece, f, piece.dx * f.w, target + piece.dy * f.w, size * 0.45);
+    } else {
+      ctx.translate(piece.dx * f.w, piece.dy * f.w);
+      piece.paint(ctx, f.w);
+      rememberSpot(piece, f, piece.dx * f.w, (piece.mid + piece.dy) * f.w, piece.reach * f.w);
+    }
     ctx.restore();
   }
 }
+
+// ---- sliding pieces into place with a finger or the mouse ----
+
+function rememberSpot(piece, f, a, b, r) {
+  // turn a face-space point into a canvas point
+  piece.spot = {
+    x: f.x + a * Math.cos(f.tilt) - b * Math.sin(f.tilt),
+    y: f.y + a * Math.sin(f.tilt) + b * Math.cos(f.tilt),
+    r: Math.max(r, 30),
+    f: f
+  };
+}
+
+function toCanvasPoint(px, py) {
+  // the picture fills the screen by cropping (object-fit cover),
+  // and the selfie view is mirrored, so undo both to find the
+  // canvas spot under the finger
+  const cssW = window.innerWidth, cssH = window.innerHeight;
+  const s = Math.max(cssW / paint.width, cssH / paint.height);
+  const ox = (cssW - paint.width * s) / 2;
+  const oy = (cssH - paint.height * s) / 2;
+  let sx = px;
+  if (document.body.classList.contains('mirrored')) sx = cssW - px;
+  return { x: (sx - ox) / s, y: (py - oy) / s, s: s };
+}
+
+let held = null;   // the piece being slid right now
+
+paint.addEventListener('pointerdown', (e) => {
+  const p = toCanvasPoint(e.clientX, e.clientY);
+  let best = null, bestD = 1e9;
+  for (const slot in worn) {
+    const piece = worn[slot];
+    if (!piece || !piece.spot) continue;
+    const d = Math.hypot(p.x - piece.spot.x, p.y - piece.spot.y);
+    if (d < piece.spot.r * 1.3 && d < bestD) { best = piece; bestD = d; }
+  }
+  if (best) {
+    held = { piece: best, lastX: p.x, lastY: p.y };
+    try { paint.setPointerCapture(e.pointerId); } catch (err) {}
+  }
+});
+
+paint.addEventListener('pointermove', (e) => {
+  if (!held) return;
+  const p = toCanvasPoint(e.clientX, e.clientY);
+  const f = held.piece.spot.f;
+  const dxc = p.x - held.lastX;
+  const dyc = p.y - held.lastY;
+  // undo the face's tilt so the slide follows the finger
+  const da = dxc * Math.cos(-f.tilt) - dyc * Math.sin(-f.tilt);
+  const db = dxc * Math.sin(-f.tilt) + dyc * Math.cos(-f.tilt);
+  held.piece.dx += da / f.w;
+  held.piece.dy += db / f.w;
+  held.lastX = p.x;
+  held.lastY = p.y;
+});
+
+paint.addEventListener('pointerup', () => { held = null; });
+paint.addEventListener('pointercancel', () => { held = null; });
 
 document.getElementById('startBtn').addEventListener('click', start);
 </script>
