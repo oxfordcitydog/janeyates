@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop — Jane Yates Cyanotypes</title>
-<meta name="description" content="Buy original cyanotype prints by Jane Yates. Unique one-off artworks made with discarded computer parts. £200 each including UK delivery.">
-<meta property="og:title" content="Shop — Jane Yates Cyanotypes">
-<meta property="og:description" content="Original cyanotype prints, £200 each including UK delivery. Every print is a unique one-off.">
+<title>T-Shirts — Jane Yates Cyanotypes</title>
+<meta name="description" content="Wearable art: T-shirts printed with original cyanotype artworks by Jane Yates, made to order in the UK. £200 each including UK delivery.">
+<meta property="og:title" content="T-Shirts — Jane Yates Cyanotypes">
+<meta property="og:description" content="Wearable art editions: T-shirts printed with Jane Yates cyanotype artworks, made to order. £200 including UK delivery.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="jane14-wm.jpg">
 <link rel="icon" href="favicon.ico" sizes="32x32">
@@ -120,22 +120,27 @@ footer a:hover{color:var(--paper)}
   <ul>
     <li><a href="index.html#work">Work</a></li>
     <li><a href="shop.html">Shop</a></li>
-    <li><a href="tshirts.html">T-Shirts</a></li>
     <li><a href="index.html#about">About</a></li>
     <li><a href="enquiries.html">Contact</a></li>
   </ul>
 </nav>
 <main>
 <header class="shop-head">
-  <h1 class="section-head">Shop</h1>
+  <h1 class="section-head">T-Shirts</h1>
   <hr class="rule">
-  <p class="lede">Original cyanotype prints from <em>Blueprints of Technology</em> — obsolete computer parts exposed onto hand-coated paper.
-    Every print is a unique one-off: once it&rsquo;s sold, it&rsquo;s gone.
-    Each is <strong>&pound;200 including UK delivery</strong> (UK addresses only). Click any image for full details and room views.</p>
-  <p class="shop-terms">The first payment secures a piece; any later payment is refunded in full. Please choose &ldquo;goods and services&rdquo; when paying with PayPal.
-    Returns are welcome within 14 days of delivery for a full refund &mdash; you cover the return postage, and the print must arrive back in its original condition.</p>
+  <p class="lede">Wearable art editions &mdash; T-shirts printed with artworks from <em>Blueprints of Technology</em>,
+    made to order in the UK and posted directly to you.
+    Each is <strong>&pound;200 including UK delivery</strong> (UK addresses only).
+    Images below are low-resolution previews marked &ldquo;SAMPLE&rdquo;; the printed shirt carries the full artwork, no watermark.</p>
+  <p class="shop-terms"><strong>How to order:</strong> press Buy, and when PayPal asks for a note, please include your
+    <strong>size (S, M, L, XL or 2XL)</strong> and your UK delivery address. Please choose &ldquo;goods and services&rdquo; when paying.
+    Each shirt is printed for you on demand, so please allow up to two weeks for delivery.
+    Made-to-order items can be returned within 14 days of delivery if faulty or not as described.</p>
 </header>
-<div class="shop-grid" id="shop-grid"></div>
+<!-- oncontextmenu is a courtesy speed-bump only: it stops casual right-click saving.
+     Real protection is that these previews are low-resolution with SAMPLE baked into the pixels,
+     and the full-resolution artwork files are never uploaded to this site at all. -->
+<div class="shop-grid" id="shop-grid" oncontextmenu="return false"></div>
 </main>
 <footer>
   &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
@@ -151,45 +156,29 @@ footer a:hover{color:var(--paper)}
    Prices and details mirror the individual piece pages.
    If a piece sells, delete its line here AND update its own page. */
 const items = [
- {num:1,  title:"Circuit Glow",       size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype photogram of perforated dot-matrix printer panels floating above soft, ghostly blurred shapes, sun-printed in deep Prussian blue from salvaged computer parts"},
- {num:3,  title:"Plugs and Circuits", size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype photogram of paddle-shaped fan blades, a square circuit board and a coiled telephone cable arranged among phone shells, printed in Prussian blue"},
- {num:4,  title:"Ring Cluster",       size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype print of ring and gear shapes clustered around rectangular mechanical parts, white silhouettes of salvaged technology glowing on deep blue"},
- {num:5,  title:"Frames and Film",    size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of telephone handsets, floppy disks, a coiled cable and framed film-strip squares, obsolete media sun-printed as white shadows on Prussian blue"},
- {num:7,  title:"Blue Circuit",       size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype with a pale blue accent circle among gear rings, an arrow shape and cassette-style rectangles, printed by sunlight from salvaged electronics"},
- {num:9,  title:"Contact Sheet",      size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype featuring a grid of small film contact prints above telephone shells, circles and a keyhole shape, analogue photography relics in blue and white"},
- {num:10, title:"Gear and Handset",   size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype photogram of a large square component with a circular gear, a telephone handset and a coiled ribbon cable in deep Prussian blue"},
- {num:11, title:"Carousel",           size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype sun print of three circular slide-carousel apertures from an old projector, glowing like eclipses on deep Prussian blue"},
- {num:12, title:"Perforated Rings",   size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of a perforated mesh panel, D-shaped ring components and a large vinyl-record-like disc, salvaged parts printed white on blue"},
- {num:15, title:"Pin Grid",           size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype close-up of a dense processor pin-grid pattern beside circular components and a floppy disk, computer hardware printed in Prussian blue"},
- {num:16, title:"Game Controller",    size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of a game controller silhouette with its D-pad cross beside a radiant sunburst disc, retro gaming hardware sun-printed on deep blue"},
- {num:17, title:"The Game",           size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of ring and washer shapes beside a perforated strip and saw-toothed edges, machine parts glowing white on Prussian blue"},
- {num:18, title:"Cooling Fan",        size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of small cooling-fan blades, circuit-board squares and a dense perforated panel, salvaged computer parts sun-printed in deep blue"},
- {num:19, title:"Circuit Face",       size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype collage of cable loops, a circular gear cluster and a grid of dotted squares, old electronics printed by sunlight in Prussian blue"},
- {num:23, title:"Memory Grid",        size:"42 × 29.5 cm (unframed)", price:200, alt:"Landscape cyanotype of small rectangular memory-chip blocks repeating in a grid like RAM pins, glowing pale blue on a dark Prussian-blue ground"},
- {num:24, title:"Office Phones",      size:"29.5 × 42 cm (unframed)", price:200, alt:"Cyanotype of rows of office telephone keypads and handsets, their buttons glowing in grids like lit windows at night, in deep Prussian blue"},
- {num:25, title:"Computer Parts",     size:"29.7 × 42 cm (unframed)", price:200, alt:"Cyanotype collage of salvaged computer parts, brackets, mounting plates and fan housings overlapping as white silhouettes in deep Prussian blue"},
- {num:26, title:"Phone Keypads",      size:"42 × 29.7 cm (unframed)", price:200, alt:"Landscape cyanotype of rubber keypad membranes from old desk telephones, their glowing button grids repeated in rows on midnight blue"},
+ {num:25, title:"Computer Parts Tee", size:"Unisex T-shirt · S–2XL", price:200, img:"tee25-th.jpg", art:"cyanotypejane25.html", alt:"Preview of a T-shirt artwork: cyanotype collage of salvaged computer parts in deep Prussian blue, marked with a repeating SAMPLE watermark"},
+ {num:26, title:"Phone Keypads Tee",  size:"Unisex T-shirt · S–2XL", price:200, img:"tee26-th.jpg", art:"cyanotypejane26.html", alt:"Preview of a T-shirt artwork: cyanotype of glowing telephone keypad membranes on midnight blue, marked with a repeating SAMPLE watermark"},
 ];
 /* ------------------------------------------- */
 const grid = document.getElementById('shop-grid');
 items.forEach(w=>{
-  const page = `cyanotypejane${w.num}.html`;
+  const page = w.art;
   const el = document.createElement('div');
   el.className = 'item';
   el.innerHTML = `
     <div class="frame">
-      <a href="${page}" aria-label="${w.title} — full details">
-        <img src="jane${w.num}-th.jpg" alt="${w.alt}" loading="lazy">
+      <a href="${page}" aria-label="${w.title} — see the original artwork">
+        <img src="${w.img}" alt="${w.alt}" loading="lazy">
       </a>
     </div>
     <div class="info">
       <span class="t"><a href="${page}">${w.title}</a></span>
-      <span class="n">No. ${String(w.num).padStart(2,'0')} · Unique print</span>
+      <span class="n">Printed with artwork No. ${String(w.num).padStart(2,'0')}</span>
       <span class="size">${w.size}</span>
       <span class="price">&pound;${w.price}<span class="ship">Includes UK delivery</span></span>
       <div class="actions">
         <a class="btn" href="https://www.paypal.com/paypalme/janeyates1/${w.price}GBP" rel="noopener" target="_blank">Buy · &pound;${w.price}</a><br>
-        <a class="detail-link" href="${page}">Full details &amp; room view</a>
+        <a class="detail-link" href="${page}">See the original artwork</a>
       </div>
     </div>`;
   grid.appendChild(el);
