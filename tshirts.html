@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>T-Shirts — Jane Yates Cyanotypes</title>
+<title>Shirts — Jane Yates Cyanotypes</title>
 <meta name="description" content="Wearable art: T-shirts printed with original cyanotype artworks by Jane Yates, made to order in the UK. £200 each including UK delivery.">
-<meta property="og:title" content="T-Shirts — Jane Yates Cyanotypes">
+<meta property="og:title" content="Shirts — Jane Yates Cyanotypes">
 <meta property="og:description" content="Wearable art editions: T-shirts printed with Jane Yates cyanotype artworks, made to order. £200 including UK delivery.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="jane14-wm.jpg">
@@ -55,7 +55,7 @@ nav ul{display:flex;gap:34px;list-style:none}
 nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
   letter-spacing:.22em;text-transform:uppercase;transition:color .3s}
 nav a:hover,nav a:focus{color:#fff}
-@media(max-width:640px){nav ul{gap:18px} nav{padding:16px 5vw}}
+@media(max-width:640px){nav{padding:14px 4vw}nav ul{gap:8px;flex-wrap:wrap;justify-content:flex-end;row-gap:8px}nav a{background:rgba(8,20,46,.62);padding:7px 12px;border-radius:999px;color:#fff;letter-spacing:.1em;white-space:nowrap;font-size:.72rem;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}}
 .shop-head{padding:150px 6vw 0;max-width:1200px;margin:0 auto}
 .section-head{
   font-family:var(--serif);font-weight:500;
@@ -112,6 +112,9 @@ footer a:hover{color:var(--paper)}
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
 }
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.thumbs img{width:44px;height:44px;object-fit:cover;border-radius:4px;cursor:pointer;opacity:.7;transition:opacity .2s;border:1px solid rgba(8,20,46,.15)}
+.thumbs img:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -119,22 +122,23 @@ footer a:hover{color:var(--paper)}
   <a class="wordmark" href="index.html">Jane Yates</a>
   <ul>
     <li><a href="index.html#work">Work</a></li>
-    <li><a href="shop.html">Shop</a></li>
+    <li><a href="shop.html">Original Art</a></li>
+    <li><a href="tshirts.html">Shirts</a></li>
     <li><a href="index.html#about">About</a></li>
     <li><a href="enquiries.html">Contact</a></li>
   </ul>
 </nav>
 <main>
 <header class="shop-head">
-  <h1 class="section-head">T-Shirts</h1>
+  <h1 class="section-head">Shirts</h1>
   <hr class="rule">
   <p class="lede">Wearable art editions &mdash; T-shirts printed with artworks from <em>Blueprints of Technology</em>,
-    made to order in the UK and posted directly to you.
+    made to order in the UK and posted directly to you. Every design is a <strong>limited edition of five</strong> — once the five are worn, that design is retired.
     Each is <strong>&pound;200 including UK delivery</strong> (UK addresses only).
-    Images below are low-resolution previews marked &ldquo;SAMPLE&rdquo;; the printed shirt carries the full artwork, no watermark.</p>
+    Images below are low-resolution previews marked &ldquo;SAMPLE&rdquo;; the printed shirt carries the full artwork, no watermark. Prefer the real thing? Browse the <a href="shop.html">original prints</a>.</p>
   <p class="shop-terms"><strong>How to order:</strong> press Buy, and when PayPal asks for a note, please include your
     <strong>size (S, M, L, XL or 2XL)</strong> and your UK delivery address. Please choose &ldquo;goods and services&rdquo; when paying.
-    Each shirt is printed for you on demand, so please allow up to two weeks for delivery.
+    Each shirt is printed for you on demand, so please allow up to <strong>20 days</strong> for it to arrive in the post. The button shirt is a lightweight woven polyester (the fabric that makes all-over printing possible), printed, cut and sewn to order; the tees are soft organic cotton.
     Made-to-order items can be returned within 14 days of delivery if faulty or not as described.</p>
 </header>
 <!-- oncontextmenu is a courtesy speed-bump only: it stops casual right-click saving.
@@ -156,8 +160,9 @@ footer a:hover{color:var(--paper)}
    Prices and details mirror the individual piece pages.
    If a piece sells, delete its line here AND update its own page. */
 const items = [
- {num:25, title:"Computer Parts Tee", size:"Unisex T-shirt · S–2XL", price:200, img:"tee25-th.jpg", art:"cyanotypejane25.html", alt:"Preview of a T-shirt artwork: cyanotype collage of salvaged computer parts in deep Prussian blue, marked with a repeating SAMPLE watermark"},
- {num:26, title:"Phone Keypads Tee",  size:"Unisex T-shirt · S–2XL", price:200, img:"tee26-th.jpg", art:"cyanotypejane26.html", alt:"Preview of a T-shirt artwork: cyanotype of glowing telephone keypad membranes on midnight blue, marked with a repeating SAMPLE watermark"},
+ {num:25, title:"Computer Parts Button Shirt", size:"All-over print unisex shirt · woven polyester · sizes 2XS–6XL", price:200, ed:5, left:5, img:"shirt25-3.jpg", art:"cyanotypejane25.html", imgs:["shirt25-3.jpg","shirt25-1.jpg","shirt25-8.jpg","shirt25-5.jpg","shirt25-6.jpg","shirt25-4.jpg","shirt25-10.jpg","shirt25-2.jpg","shirt25-7.jpg","shirt25-9.jpg"], alt:"All-over print unisex button shirt covered in a mirrored cyanotype pattern of salvaged computer parts in Prussian blue and cream, with a Jane Yates copyright watermark"},
+ {num:25, title:"Computer Parts Tee", size:"Unisex organic cotton T-shirt · sizes S–2XL", price:200, ed:5, left:5, img:"tee25-th.jpg", art:"cyanotypejane25.html", alt:"Preview of a T-shirt artwork: cyanotype collage of salvaged computer parts in deep Prussian blue, marked with a repeating SAMPLE watermark"},
+ {num:26, title:"Phone Keypads Tee",  size:"Unisex organic cotton T-shirt · sizes S–2XL", price:200, ed:5, left:5, img:"tee26-th.jpg", art:"cyanotypejane26.html", alt:"Preview of a T-shirt artwork: cyanotype of glowing telephone keypad membranes on midnight blue, marked with a repeating SAMPLE watermark"},
 ];
 /* ------------------------------------------- */
 const grid = document.getElementById('shop-grid');
@@ -171,13 +176,15 @@ items.forEach(w=>{
         <img src="${w.img}" alt="${w.alt}" loading="lazy">
       </a>
     </div>
+    ${w.imgs ? `<div class="thumbs">${w.imgs.map((f,i)=>`<img src="${f}" alt="View ${i+1} of ${w.title}" loading="lazy" onclick="this.closest('.item').querySelector('.frame img').src=this.src">`).join('')}</div>` : ``}
     <div class="info">
       <span class="t"><a href="${page}">${w.title}</a></span>
       <span class="n">Printed with artwork No. ${String(w.num).padStart(2,'0')}</span>
       <span class="size">${w.size}</span>
       <span class="price">&pound;${w.price}<span class="ship">Includes UK delivery</span></span>
+      <span class="size" style="letter-spacing:.04em">${w.left>0 ? `Limited edition of ${w.ed} — <strong>${w.left} of ${w.ed} remaining</strong>` : `Limited edition of ${w.ed} — <strong>sold out</strong>`}</span>
       <div class="actions">
-        <a class="btn" href="https://www.paypal.com/paypalme/janeyates1/${w.price}GBP" rel="noopener" target="_blank">Buy · &pound;${w.price}</a><br>
+        ${w.left>0 ? `<a class="btn" href="https://www.paypal.com/paypalme/janeyates1/${w.price}GBP" rel="noopener" target="_blank">Buy · &pound;${w.price}</a>` : `<span class="btn" style="opacity:.45;pointer-events:none">Sold out</span>`}<br>
         <a class="detail-link" href="${page}">See the original artwork</a>
       </div>
     </div>`;
