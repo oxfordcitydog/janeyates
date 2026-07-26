@@ -1,110 +1,199 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>High-Top Shoes — Jane Yates</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High-Top Shoes &mdash; Jane Yates</title>
+<meta name="description" content="Limited edition high-top canvas shoes printed with original cyanotype artwork by Jane Yates. Made to order, £200 including UK delivery.">
+<meta property="og:title" content="High-Top Shoes &mdash; Jane Yates">
+<meta property="og:description" content="Wearable art: high-top canvas shoes printed with Jane Yates cyanotype blueprints.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="shoe25-2.jpg">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="icon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#08142e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08142e;
+  --ink2:#0d1f42;
+  --ink3:#16305e;
+  --paper:#e9eef5;
+  --paper-dim:#a9b8ce;
+  --cyan:#7fb4d8;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--cyan);color:var(--ink)}
 
-  <style>
-    /* Product grid for side-by-side display */
-    .shoe-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
+/* ---------- header / nav (identical to index.html) ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 5vw;
+  background:linear-gradient(to bottom,rgba(8,20,46,.92),rgba(8,20,46,0));
+}
+nav .wordmark{
+  font-family:var(--serif);font-size:1.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--paper);text-decoration:none;
+}
+nav ul{display:flex;gap:34px;list-style:none}
+nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
+  letter-spacing:.22em;text-transform:uppercase;transition:color .3s}
+nav a:hover,nav a:focus{color:#fff}
+nav a[aria-current="page"]{color:#fff}
 
-    .shoe-card {
-      flex: 1 1 300px; /* Responsive: side-by-side on desktop, stacks nicely on mobile */
-      border: 1px solid #eee;
-      padding: 1.5rem;
-      text-align: center;
-      box-sizing: border-box;
-    }
+/* mobile: the pill buttons */
+@media(max-width:640px){
+  nav{padding:14px 4vw}
+  nav ul{gap:8px;flex-wrap:wrap;justify-content:flex-end;row-gap:8px}
+  nav a{
+    background:rgba(8,20,46,.62);
+    padding:7px 12px;
+    border-radius:999px;
+    color:#fff;
+    letter-spacing:.1em;
+    white-space:nowrap;
+    font-size:.72rem;
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter:blur(5px);
+  }
+  nav .wordmark{
+    background:rgba(8,20,46,.62);
+    padding:8px 16px;
+    border-radius:999px;
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter:blur(5px);
+    font-size:1.05rem;
+  }
+}
 
-    .shoe-card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      margin-bottom: 1rem;
-    }
+/* ---------- page head ---------- */
+.page-head{
+  padding:150px 6vw 0;text-align:center;
+}
+@media(max-width:640px){.page-head{padding-top:220px}}
+.page-head h1{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.9rem,5vw,3rem);letter-spacing:.04em;
+}
+.rule{width:64px;height:1px;background:var(--cyan);margin:18px auto 26px;border:0}
+.lede{max-width:620px;margin:0 auto;color:var(--paper-dim);font-size:1.02rem}
 
-    .shoe-card h2 {
-      margin: 0.5rem 0;
-      font-size: 1.25rem;
-    }
+/* ---------- product grid ---------- */
+.shoe-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:40px;max-width:1000px;margin:70px auto;padding:0 6vw 90px;
+}
+.shoe-card{
+  background:var(--ink2);
+  border:1px solid rgba(127,180,216,.22);
+  padding:26px;text-align:center;
+  box-shadow:0 14px 34px -16px rgba(0,0,0,.85);
+}
+.shoe-card img{
+  width:100%;height:auto;display:block;margin-bottom:20px;
+  transition:transform 1.1s cubic-bezier(.2,.6,.2,1);
+}
+.shoe-card:hover img{transform:scale(1.03)}
+.shoe-card h2{
+  font-family:var(--serif);font-weight:500;
+  font-size:1.4rem;letter-spacing:.03em;margin-bottom:6px;
+}
+.shoe-card .price{
+  font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--paper-dim);margin-bottom:24px;
+}
+.btn{
+  display:inline-block;border:1px solid var(--cyan);background:none;
+  color:var(--paper);font-family:var(--sans);font-weight:300;
+  text-decoration:none;letter-spacing:.24em;text-transform:uppercase;
+  font-size:.78rem;padding:15px 38px;cursor:pointer;
+  transition:background .35s,color .35s;
+}
+.btn:hover,.btn:focus{background:var(--cyan);color:var(--ink)}
 
-    .shoe-card .price {
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-
-    .shoe-card button {
-      background-color: #000;
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .shoe-card button:hover {
-      background-color: #333;
-    }
-  </style>
+/* ---------- footer ---------- */
+footer{
+  padding:40px 6vw 50px;text-align:center;color:var(--paper-dim);
+  font-size:.78rem;letter-spacing:.06em;
+  border-top:1px solid rgba(127,180,216,.15);
+}
+footer a{color:var(--paper-dim)}
+footer a:hover{color:var(--paper)}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
 </head>
 <body>
 
 <nav aria-label="Main">
-  <a href="index.html">Jane Yates</a>
+  <a class="wordmark" href="index.html">Jane Yates</a>
   <ul>
     <li><a href="index.html#work">Work</a></li>
     <li><a href="shop.html">Original Art</a></li>
     <li><a href="shirts.html">Shirts</a></li>
-    <li><a href="high-top.html">Shoes</a></li>
+    <li><a href="high-top.html" aria-current="page">High-Tops</a></li>
+    <li><a href="thecollagepage.html">Make A Collage</a></li>
     <li><a href="index.html#about">About</a></li>
     <li><a href="enquiries.html">Contact</a></li>
   </ul>
 </nav>
 
 <main>
-  <header style="text-align: center; padding: 2rem 1rem;">
+  <header class="page-head">
     <h1>High-Top Canvas Shoes</h1>
-    <hr style="max-width: 100px; margin: 1rem auto;">
-    <p>Limited edition wearable art featuring custom blueprint artwork, printed and made to order.</p>
+    <hr class="rule">
+    <p class="lede">Limited edition wearable art, printed with original cyanotype blueprint artwork. Made to order.</p>
   </header>
 
-  <!-- Side-by-side shoes container -->
   <section class="shoe-grid">
-    
-    <!-- Women's High-Tops -->
     <article class="shoe-card">
-      <img src="shoe25-2.jpg" alt="Women's High-Top Canvas Shoes by Jane Yates">
+      <img src="shoe25-2.jpg" alt="Women's high-top canvas shoes printed with a Prussian blue cyanotype blueprint design by Jane Yates">
       <h2>Women's High-Tops</h2>
-      <p class="price">£200 including UK delivery</p>
-
-      <!-- Replace action with your PayPal link or form -->
+      <p class="price">&pound;200 including UK delivery</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-        <button type="submit">Buy Now</button>
+        <button class="btn" type="submit">Buy now</button>
       </form>
     </article>
 
-    <!-- Men's High-Tops -->
     <article class="shoe-card">
-      <img src="shoe25m-1.jpg" alt="Men's High-Top Canvas Shoes by Jane Yates">
+      <img src="shoe25m-1.jpg" alt="Men's high-top canvas shoes printed with a Prussian blue cyanotype blueprint design by Jane Yates">
       <h2>Men's High-Tops</h2>
-      <p class="price">£200 including UK delivery</p>
-
-      <!-- Replace action with your PayPal link or form -->
+      <p class="price">&pound;200 including UK delivery</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-        <button type="submit">Buy Now</button>
+        <button class="btn" type="submit">Buy now</button>
       </form>
     </article>
-
   </section>
 </main>
 
+<footer>
+  &copy; <span id="yr"></span> Jane Yates &middot; Lyme Regis, UK &middot;
+  <a href="enquiries.html">Contact</a> &middot;
+  <a href="https://x.com/janeyatesartist" rel="noopener">X</a> &middot;
+  <a href="https://www.instagram.com/janeyatesartist" rel="noopener">Instagram</a> &middot;
+  <a href="https://uk.pinterest.com/JaneYatesArtist/" rel="noopener">Pinterest</a>
+</footer>
+
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
 </body>
 </html>

@@ -56,7 +56,31 @@ nav ul{display:flex;gap:34px;list-style:none}
 nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
   letter-spacing:.22em;text-transform:uppercase;transition:color .3s}
 nav a:hover,nav a:focus{color:#fff}
-@media(max-width:640px){nav{padding:14px 4vw}nav ul{gap:8px;flex-wrap:wrap;justify-content:flex-end;row-gap:8px}nav a{background:rgba(8,20,46,.62);padding:7px 12px;border-radius:999px;color:#fff;letter-spacing:.1em;white-space:nowrap;font-size:.72rem;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}}
+/* ---------- MOBILE NAV PILL BUTTONS - keep this block! ---------- */
+@media(max-width:640px){
+  nav{padding:14px 4vw}
+  nav ul{gap:8px;flex-wrap:wrap;justify-content:flex-end;row-gap:8px}
+  nav a{
+    background:rgba(8,20,46,.62);
+    padding:7px 12px;
+    border-radius:999px;
+    color:#fff;
+    letter-spacing:.1em;
+    white-space:nowrap;
+    font-size:.72rem;
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter:blur(5px);
+  }
+  nav .wordmark{
+    background:rgba(8,20,46,.62);
+    padding:8px 16px;
+    border-radius:999px;
+    -webkit-backdrop-filter:blur(5px);
+    backdrop-filter:blur(5px);
+    font-size:1.05rem;
+  }
+}
+/* ---------------------------------------------------------------- */
 /* ---------- hero ---------- */
 .hero{
   min-height:100svh;display:flex;flex-direction:column;
@@ -230,7 +254,7 @@ footer a:hover{color:var(--paper)}
     <li><a href="#work">Work</a></li>
     <li><a href="shop.html">Original Art</a></li>
     <li><a href="shirts.html">Shirts</a></li>
-    <li><a href="high-top.html">Shoes</a></li>
+    <li><a href="high-top.html">High-Tops</a></li>
     <li><a href="thecollagepage.html">Make A Collage</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="enquiries.html">Contact</a></li>
