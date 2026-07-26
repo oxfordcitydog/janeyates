@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High-Top Shoes — Jane Yates</title>
 
+  <style>
+    /* Product grid for side-by-side display */
+    .shoe-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .shoe-card {
+      flex: 1 1 300px; /* Responsive: side-by-side on desktop, stacks nicely on mobile */
+      border: 1px solid #eee;
+      padding: 1.5rem;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .shoe-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .shoe-card h2 {
+      margin: 0.5rem 0;
+      font-size: 1.25rem;
+    }
+
+    .shoe-card .price {
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .shoe-card button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .shoe-card button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<nav aria-label="Main">
+  <a href="index.html">Jane Yates</a>
+  <ul>
+    <li><a href="index.html#work">Work</a></li>
+    <li><a href="shop.html">Original Art</a></li>
+    <li><a href="shirts.html">Shirts</a></li>
+    <li><a href="high-top.html">Shoes</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="enquiries.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <header style="text-align: center; padding: 2rem 1rem;">
+    <h1>High-Top Canvas Shoes</h1>
+    <hr style="max-width: 100px; margin: 1rem auto;">
+    <p>Limited edition wearable art featuring custom blueprint artwork, printed and made to order.</p>
+  </header>
+
+  <!-- Side-by-side shoes container -->
+  <section class="shoe-grid">
+    
+    <!-- Women's High-Tops -->
+    <article class="shoe-card">
+      <img src="shoe25-2.jpg" alt="Women's High-Top Canvas Shoes by Jane Yates">
+      <h2>Women's High-Tops</h2>
+      <p class="price">£200 including UK delivery</p>
+
+      <!-- Replace action with your PayPal link or form -->
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <button type="submit">Buy Now</button>
+      </form>
+    </article>
+
+    <!-- Men's High-Tops -->
+    <article class="shoe-card">
+      <img src="shoe25m-1.jpg" alt="Men's High-Top Canvas Shoes by Jane Yates">
+      <h2>Men's High-Tops</h2>
+      <p class="price">£200 including UK delivery</p>
+
+      <!-- Replace action with your PayPal link or form -->
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <button type="submit">Buy Now</button>
+      </form>
+    </article>
+
+  </section>
+</main>
+
+</body>
+</html>
