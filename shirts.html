@@ -135,7 +135,7 @@ footer a:hover{color:var(--paper)}
   <p class="lede">Wearable art editions &mdash; shirts printed with artworks from <em>Blueprints of Technology</em>,
     made to order in the UK and posted directly to you. Every design is a <strong>limited edition of five</strong> — once the five are worn, that design is retired.
     Each is <strong>&pound;200 including UK delivery</strong> (UK addresses only).
-    Images below are low-resolution previews marked &ldquo;SAMPLE&rdquo;; the printed shirt carries the full artwork, no watermark. Click any shirt for the full gallery and details. Prefer the real thing? Browse the <a href="shop.html">original prints</a>.</p>
+    Images below are low-resolution previews marked &ldquo;SAMPLE&rdquo;; the printed shirt carries the full artwork, no watermark. Prefer the real thing? Browse the <a href="shop.html">original prints</a>.</p>
   <p class="shop-terms"><strong>How to order:</strong> press Buy, and when PayPal asks for a note, please include your
     <strong>size (S, M, L, XL or 2XL)</strong> and your UK delivery address. Please choose &ldquo;goods and services&rdquo; when paying.
     Each shirt is printed for you on demand, so please allow up to <strong>20 days</strong> for it to arrive in the post. The button shirt is a lightweight woven polyester (the fabric that makes all-over printing possible), printed, cut and sewn to order; the tees are soft organic cotton.
@@ -160,16 +160,18 @@ footer a:hover{color:var(--paper)}
    Prices and details mirror the individual piece pages.
    If a piece sells, delete its line here AND update its own page. */
 const items = [
- {num:0, title:"Controller &amp; Keys", size:"All-over print unisex shirt · 2XS–6XL", price:200, ed:5, left:5, img:"shirtcontroller-6.jpg", art:"shirtjanecontroller.html",
-  alt:"Model wearing an all-over print unisex button shirt in a smoky blue-black cyanotype pattern made from a games console controller and a computer keyboard"},
- {num:27, title:"Double Blueprint", size:"All-over print unisex shirt · 2XS–6XL", price:200, ed:5, left:5, img:"shirt27-5.jpg", art:"shirtjane27.html",
-  alt:"Model wearing an all-over print unisex button shirt in a pale blue and white cyanotype pattern of keyboards, fan housings and circuit boards"},
- {num:25, title:"Computer Parts", size:"All-over print unisex shirt · 2XS–6XL", price:200, ed:5, left:5, img:"shirt25-4.jpg", art:"shirtjane25.html",
-  alt:"Model wearing an all-over print unisex button shirt covered in a mirrored cyanotype pattern of salvaged computer parts in deep Prussian blue and cream"},
- {num:2, title:"Boom Box", size:"All-over print unisex shirt · 2XS–6XL", price:200, ed:5, left:5, img:"shirt2-4.jpg", art:"shirtjane2.html",
-  alt:"Model wearing an all-over print unisex button shirt in a dense check pattern of repeated 1980s boom box cyanotypes in deep blue and cream"},
- {num:26, title:"Phone Keypads", size:"All-over print unisex shirt · 2XS–6XL", price:200, ed:5, left:5, img:"shirt26-8.jpg", art:"shirtjane26.html",
-  alt:"Model wearing an all-over print unisex button shirt covered in a cyanotype pattern of telephone keypad membranes glowing like tower-block windows at night"},
+ {num:27, title:"Double Blueprint Button Shirt", size:"All-over print unisex shirt · woven polyester · sizes 2XS–6XL", price:200, ed:5, left:5, img:"shirt27-5.jpg",
+  imgs:["shirt27-5.jpg","shirt27-1.jpg","shirt27-6.jpg","shirt27-4.jpg","shirt27-3.jpg","shirt27-2.jpg","shirt27-7.jpg"],
+  alt:"Model wearing an all-over print unisex button shirt in a pale blue and white cyanotype pattern of keyboards, fan housings and circuit boards, with a Jane Yates copyright watermark"},
+ {num:25, title:"Computer Parts Button Shirt", size:"All-over print unisex shirt · woven polyester · sizes 2XS–6XL", price:200, ed:5, left:5, img:"shirt25-4.jpg", art:"cyanotypejane25.html",
+  imgs:["shirt25-4.jpg","shirt25-3.jpg","shirt25-1.jpg","shirt25-8.jpg","shirt25-6.jpg","shirt25-5.jpg","shirt25-10.jpg","shirt25-2.jpg","shirt25-7.jpg","shirt25-9.jpg"],
+  alt:"Model wearing an all-over print unisex button shirt covered in a mirrored cyanotype pattern of salvaged computer parts in deep Prussian blue and cream, with a Jane Yates copyright watermark"},
+ {num:2, title:"Boom Box Button Shirt", size:"All-over print unisex shirt · woven polyester · sizes 2XS–6XL", price:200, ed:5, left:5, img:"shirt2-4.jpg", art:"cyanotypejane2.html",
+  imgs:["shirt2-4.jpg","shirt2-5.jpg","shirt2-1.jpg","shirt2-12.jpg","shirt2-8.jpg","shirt2-15.jpg","shirt2-9.jpg","shirt2-11.jpg","shirt2-7.jpg","shirt2-3.jpg","shirt2-14.jpg","shirt2-2.jpg","shirt2-6.jpg","shirt2-10.jpg","shirt2-13.jpg"],
+  alt:"Model wearing an all-over print unisex button shirt in a dense check pattern of repeated 1980s boom box cyanotypes, deep blue and cream, with a Jane Yates copyright watermark"},
+ {num:26, title:"Phone Keypads Button Shirt", size:"All-over print unisex shirt · woven polyester · sizes 2XS–6XL", price:200, ed:5, left:5, img:"shirt26-8.jpg", art:"cyanotypejane26.html",
+  imgs:["shirt26-8.jpg","shirt26-5.jpg","shirt26-1.jpg","shirt26-12.jpg","shirt26-4.jpg","shirt26-6.jpg","shirt26-7.jpg","shirt26-11.jpg","shirt26-14.jpg","shirt26-2.jpg","shirt26-3.jpg","shirt26-10.jpg","shirt26-9.jpg","shirt26-13.jpg"],
+  alt:"Model wearing an all-over print unisex button shirt covered in a cyanotype pattern of telephone keypad membranes glowing like tower-block windows at night, with a Jane Yates copyright watermark"},
 ];
 /* ------------------------------------------- */
 const grid = document.getElementById('shop-grid');
@@ -179,7 +181,7 @@ items.forEach(w=>{
   el.className = 'item';
   el.innerHTML = `
     <div class="frame">
-      ${page ? `<a href="${page}" aria-label="${w.title} button shirt — full details">
+      ${page ? `<a href="${page}" aria-label="${w.title} — see the original artwork">
         <img src="${w.img}" alt="${w.alt}" loading="lazy">
       </a>` : `<img src="${w.img}" alt="${w.alt}" loading="lazy">`}
     </div>
@@ -192,7 +194,7 @@ items.forEach(w=>{
       <span class="size" style="letter-spacing:.04em">${w.left>0 ? `Limited edition of ${w.ed} — <strong>${w.left} of ${w.ed} remaining</strong>` : `Limited edition of ${w.ed} — <strong>sold out</strong>`}</span>
       <div class="actions">
         ${w.left>0 ? `<a class="btn" href="https://www.paypal.com/paypalme/janeyates1/${w.price}GBP" rel="noopener" target="_blank">Buy · &pound;${w.price}</a>` : `<span class="btn" style="opacity:.45;pointer-events:none">Sold out</span>`}<br>
-        ${page ? `<a class="detail-link" href="${page}">Full details &amp; gallery</a>` : ``}
+        ${page ? `<a class="detail-link" href="${page}">See the original artwork</a>` : ``}
       </div>
     </div>`;
   grid.appendChild(el);
