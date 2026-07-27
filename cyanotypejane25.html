@@ -147,6 +147,20 @@ footer a:hover{color:var(--paper)}
 .piece-nav a{color:var(--paper-dim);text-decoration:none;font-size:.78rem;
   letter-spacing:.18em;text-transform:uppercase;transition:color .3s}
 .piece-nav a:hover{color:#fff}
+/* ---------- wear the artwork ---------- */
+.wear{max-width:1000px;margin:90px auto 0;padding-top:60px;border-top:1px solid rgba(169,184,206,.18)}
+.wear-head{font-family:var(--serif);font-weight:500;font-size:clamp(1.6rem,3.4vw,2.2rem);letter-spacing:.03em}
+.wear-note{font-size:.9rem;color:var(--paper-dim);margin-bottom:34px;max-width:56ch}
+.wear-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:40px}
+.wear-card{display:block;text-decoration:none;color:inherit}
+.wear-card .wframe{background:var(--ink2);overflow:hidden;box-shadow:0 20px 50px -26px rgba(0,0,0,.85)}
+.wear-card img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;
+  transition:transform 1.1s cubic-bezier(.2,.6,.2,1)}
+.wear-card:hover img{transform:scale(1.04)}
+.wear-card .wt{display:block;font-family:var(--serif);font-size:1.25rem;margin-top:14px}
+.wear-card:hover .wt{color:var(--cyan)}
+.wear-card .wd{display:block;font-size:.8rem;color:var(--paper-dim);margin-top:4px}
+.wear-card .wp{display:block;font-family:var(--serif);font-size:1.1rem;margin-top:8px}
 </style>
 </head>
 <body>
@@ -156,6 +170,7 @@ footer a:hover{color:var(--paper)}
     <li><a href="index.html#work">Work</a></li>
     <li><a href="shop.html">Original Art</a></li>
     <li><a href="shirts.html">Shirts</a></li>
+    <li><a href="high-top.html">High-Tops</a></li>
     <li><a href="index.html#about">About</a></li>
     <li><a href="enquiries.html">Contact</a></li>
   </ul>
@@ -215,6 +230,30 @@ footer a:hover{color:var(--paper)}
       <p class="enquire-line">To enquire about this piece, please email<br>
       <span class="email-addr">&hellip;</span></p>
   </div>
+  <section class="wear">
+    <h2 class="wear-head">Love the art? Wear it.</h2>
+    <p class="wear-note">This blueprint also exists as wearable art. Both are strictly limited editions of five, made to order.</p>
+    <div class="wear-grid">
+      <a class="wear-card" href="shirts.html">
+        <div class="wframe"><img src="shirt25-4.jpg" alt="Model wearing an all-over print unisex button shirt covered in a mirrored cyanotype pattern of salvaged computer parts in deep Prussian blue and cream"></div>
+        <span class="wt">Computer Parts Button Shirt</span>
+        <span class="wd">Unisex woven polyester &middot; sizes 2XS&ndash;6XL &middot; edition of 5</span>
+        <span class="wp">&pound;200</span>
+      </a>
+      <a class="wear-card" href="high-top.html">
+        <div class="wframe"><img src="shoe25-2.jpg" alt="Woman wearing high top canvas trainers printed with a deep Prussian blue and cream cyanotype pattern of salvaged computer parts"></div>
+        <span class="wt">Women's High Top Canvas Shoes</span>
+        <span class="wd">US women's sizes 5&ndash;12 &middot; edition of 5 &middot; 4 remaining</span>
+        <span class="wp">&pound;200</span>
+      </a>
+      <a class="wear-card" href="high-top.html">
+        <div class="wframe"><img src="shoe25m-1.jpg" alt="Man holding high top canvas trainers printed with a deep Prussian blue and cream cyanotype pattern of salvaged computer parts"></div>
+        <span class="wt">Men's High Top Canvas Shoes</span>
+        <span class="wd">US men's sizes 5&ndash;13 &middot; edition of 5 &middot; 5 remaining</span>
+        <span class="wp">&pound;200</span>
+      </a>
+    </div>
+  </section>
   <div class="piece-nav">
     <a href="cyanotypejane24.html">&lsaquo; No. 24</a>
     <a href="cyanotypejane26.html">No. 26 &rsaquo;</a>
