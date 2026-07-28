@@ -1,0 +1,42 @@
+<!-- ============================================================
+     "ALSO AS A BANDANA" - cross-link for cyanotypejane4.html
+     Paste just above the No. 03 / No. 05 arrows.
+     All classes prefixed wb4- so nothing can clash.
+     ============================================================ -->
+<style>
+.wb4{
+  display:grid;grid-template-columns:260px 1fr;gap:38px;align-items:center;
+  max-width:900px;margin:80px auto 0;padding:38px 6vw;
+  background:var(--ink2,#0d1f42);
+}
+@media(max-width:700px){.wb4{grid-template-columns:1fr;gap:24px}}
+.wb4-img{overflow:hidden;box-shadow:0 14px 34px -16px rgba(0,0,0,.85)}
+.wb4-img img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;
+  transition:transform 1.1s cubic-bezier(.2,.6,.2,1)}
+.wb4:hover .wb4-img img{transform:scale(1.04)}
+.wb4-eyebrow{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--paper-dim,#a9b8ce)}
+.wb4-title{font-family:var(--serif,Georgia,serif);font-weight:500;
+  font-size:clamp(1.4rem,3vw,2rem);letter-spacing:.03em;margin:8px 0 12px;line-height:1.2}
+.wb4 p{color:var(--paper-dim,#a9b8ce);font-size:.94rem;max-width:48ch;margin-bottom:1em}
+.wb4-link{display:inline-block;margin-top:6px;
+  border:1px solid var(--cyan,#7fb4d8);color:var(--paper,#e9eef5);
+  text-decoration:none;letter-spacing:.22em;text-transform:uppercase;
+  font-size:.7rem;padding:13px 30px;transition:background .35s,color .35s}
+.wb4-link:hover,.wb4-link:focus{background:var(--cyan,#7fb4d8);color:var(--ink,#08142e)}
+</style>
+
+<aside class="wb4" aria-labelledby="wb4-h">
+  <a class="wb4-img" href="shirts.html#bandana-04">
+    <img src="bandana-04-large.jpg"
+         alt="Square bandana printed with the Ring Cluster cyanotype mirrored into a four-fold symmetrical pattern"
+         loading="lazy">
+  </a>
+  <div>
+    <p class="wb4-eyebrow">Wearable edition</p>
+    <h2 class="wb4-title" id="wb4-h">This print also comes as a bandana</h2>
+    <p>Ring Cluster mirrored four ways into one symmetrical pattern, printed edge to edge on a square of lightweight fabric. A bandana has no seams to interrupt it, so the whole pattern stays whole. Three sizes, &pound;30 including UK delivery.</p>
+    <a class="wb4-link" href="shirts.html#bandana-04">See the bandana</a>
+  </div>
+</aside>
+<!-- ================= end of bandana cross-link block ================= -->
