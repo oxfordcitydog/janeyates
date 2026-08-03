@@ -1,1 +1,367 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fortune Cookie — Jane Yates</title>
+<meta name="description" content="Crack a fortune cookie and read what it says.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: #F5EDDC;
+    background-image: radial-gradient(ellipse at 50% 20%, #FFFAF0 0%, #EADFC7 75%);
+    color: #40301C;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2.5rem 1rem 4rem; gap: 0.5rem;
+  }
+  h1 {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 500;
+    font-size: clamp(1.5rem, 5vw, 2.2rem); letter-spacing: 0.16em;
+    margin: 0; color: #9B2226;
+  }
+  .sub { margin: 0.25rem 0 1.5rem; font-size: 1.05rem; font-style: italic; color: #8A7658; }
+
+  .stage { position: relative; width: min(520px, 94vw); aspect-ratio: 1.55; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #cookie { cursor: pointer; }
+  #cookie:focus-visible { outline: 3px solid #9B2226; outline-offset: 6px; border-radius: 12px; }
+
+  #halfL, #halfR, #crumbs {
+    transition: transform 1s cubic-bezier(.22,.9,.3,1), opacity 1s ease;
+    transform-origin: 250px 160px;
+  }
+  .open #halfL { transform: translate(-108px, 34px) rotate(-24deg); }
+  .open #halfR { transform: translate(108px, 34px) rotate(24deg); }
+
+  .slip {
+    position: absolute; left: 50%; top: 50%;
+    width: 74%; max-width: 380px;
+    transform: translate(-50%, -46%) scaleY(0.04);
+    transform-origin: center;
+    background: #FFFCF4;
+    border: 1px solid #D9C9A5;
+    border-radius: 2px;
+    box-shadow: 0 6px 18px rgba(64,48,28,0.18);
+    padding: 1.4rem 1.2rem 1.1rem;
+    text-align: center;
+    opacity: 0;
+    transition: transform 0.9s cubic-bezier(.2,1.1,.3,1) 0.35s, opacity 0.5s ease 0.35s;
+    pointer-events: none;
+  }
+  .open .slip { transform: translate(-50%, -118%) scaleY(1); opacity: 1; }
+  .slip .text {
+    font-size: clamp(1.05rem, 3.4vw, 1.4rem); line-height: 1.45;
+    color: #40301C; margin: 0 0 0.85rem; min-height: 2.6em;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slip .nums {
+    font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+    letter-spacing: 0.18em; color: #9B2226;
+    border-top: 1px dashed #D9C9A5; padding-top: 0.7rem;
+  }
+
+  .hint {
+    position: absolute; left: 0; right: 0; bottom: -0.5rem; text-align: center;
+    font-style: italic; color: #A2906F; font-size: 1rem;
+    transition: opacity 0.4s;
+  }
+  .open .hint { opacity: 0; }
+
+  .row { display: flex; gap: 0.75rem; align-items: center; margin-top: 2.5rem; }
+  button {
+    font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 0.13em;
+    padding: 0.7rem 1.7rem; color: #FFF6E5;
+    background: linear-gradient(180deg, #B33A3A 0%, #9B2226 55%, #7A1619 100%);
+    border: 1px solid #6B1214; border-radius: 3px; cursor: pointer;
+    box-shadow: 0 2px 0 #5C0F11, 0 4px 12px rgba(90,20,20,0.25);
+  }
+  button:hover { background: linear-gradient(180deg, #C44B4B 0%, #AC3034 55%, #8A1E21 100%); }
+  button:active { transform: translateY(2px); box-shadow: 0 0 0 #5C0F11, 0 2px 6px rgba(90,20,20,0.25); }
+  button:focus-visible { outline: 2px solid #40301C; outline-offset: 3px; }
+  #mute { padding: 0.7rem 0.9rem; font-size: 1rem; letter-spacing: 0; }
+
+  footer {
+    margin-top: 2.5rem; font-size: 0.92rem; color: #8A7658;
+    max-width: 34rem; text-align: center; line-height: 1.6;
+  }
+  footer a { color: #9B2226; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<h1>Fortune Cookie</h1>
+<p class="sub">Crack it open and see</p>
+
+<div class="stage" id="stage">
+  <div class="slip" id="slip" role="status" aria-live="polite">
+    <p class="text" id="fortuneText"></p>
+    <p class="nums" id="luckyNums"></p>
+  </div>
+
+  <svg viewBox="0 0 500 320" id="cookie" role="button" tabindex="0" aria-label="Crack the fortune cookie">
+    <defs>
+      <linearGradient id="bake" x1="0.15" y1="0" x2="0.8" y2="1">
+        <stop offset="0%" stop-color="#F7DFA8"/>
+        <stop offset="38%" stop-color="#E8BF72"/>
+        <stop offset="72%" stop-color="#C99444"/>
+        <stop offset="100%" stop-color="#A9742C"/>
+      </linearGradient>
+      <linearGradient id="bakeDark" x1="0.2" y1="0" x2="0.75" y2="1">
+        <stop offset="0%" stop-color="#E6C787"/>
+        <stop offset="55%" stop-color="#BE8A3E"/>
+        <stop offset="100%" stop-color="#8F601F"/>
+      </linearGradient>
+      <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0%" stop-color="#FFF3D0" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#FFF3D0" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <ellipse cx="250" cy="268" rx="150" ry="18" fill="#C9B48C" opacity="0.45"/>
+    <circle id="flash" cx="250" cy="160" r="0" fill="url(#glow)"/>
+
+    <g id="halfL">
+      <path d="M250,160 C 232,108 188,84 146,94 C 96,106 70,158 92,202 C 114,244 172,256 208,230 C 232,212 246,186 250,160 Z"
+            fill="url(#bake)" stroke="#8F601F" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M250,160 C 226,146 196,140 168,148 C 136,157 116,180 116,204"
+            fill="none" stroke="#A9742C" stroke-width="2" opacity="0.5"/>
+      <path d="M146,96 C 140,120 138,148 146,176" fill="none" stroke="#B98634" stroke-width="1.6" opacity="0.45"/>
+      <ellipse cx="150" cy="130" rx="24" ry="14" fill="#FBEBC4" opacity="0.4" transform="rotate(-18 150 130)"/>
+      <ellipse cx="120" cy="196" rx="5" ry="3" fill="#8F601F" opacity="0.28"/>
+      <ellipse cx="176" cy="118" rx="4" ry="2.5" fill="#8F601F" opacity="0.24"/>
+      <ellipse cx="190" cy="220" rx="4.5" ry="3" fill="#8F601F" opacity="0.22"/>
+    </g>
+
+    <g id="halfR">
+      <path d="M250,160 C 268,108 312,84 354,94 C 404,106 430,158 408,202 C 386,244 328,256 292,230 C 268,212 254,186 250,160 Z"
+            fill="url(#bakeDark)" stroke="#8F601F" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M250,160 C 274,146 304,140 332,148 C 364,157 384,180 384,204"
+            fill="none" stroke="#A9742C" stroke-width="2" opacity="0.5"/>
+      <path d="M354,96 C 360,120 362,148 354,176" fill="none" stroke="#B98634" stroke-width="1.6" opacity="0.45"/>
+      <ellipse cx="348" cy="128" rx="22" ry="13" fill="#FBEBC4" opacity="0.32" transform="rotate(18 348 128)"/>
+      <ellipse cx="382" cy="196" rx="5" ry="3" fill="#8F601F" opacity="0.28"/>
+      <ellipse cx="322" cy="120" rx="4" ry="2.5" fill="#8F601F" opacity="0.24"/>
+      <ellipse cx="308" cy="222" rx="4.5" ry="3" fill="#8F601F" opacity="0.22"/>
+    </g>
+
+    <g id="crumbs"></g>
+  </svg>
+
+  <p class="hint" id="hint">Tap the cookie</p>
+</div>
+
+<div class="row">
+  <button id="again">Another cookie</button>
+  <button id="mute" aria-label="Mute sound" title="Sound on or off">&#9835;</button>
+</div>
+
+<footer>
+  Fortune cookies are usually served in Chinese restaurants in the West, but they
+  began as <em>tsujiura senbei</em> &mdash; a sesame-and-miso wafer baked near Kyoto
+  in the nineteenth century, with the fortune tucked into the fold.
+  <br><a href="https://github.com/oxfordcitydog/janeyates">Source on GitHub</a>
+</footer>
+
+<script>
+(function(){
+
+var fortunes = [
+  'A letter you have waited for is already written',
+  'The work you did quietly will be noticed',
+  'Someone is about to be very glad they met you',
+  'What you mislaid will turn up in an obvious place',
+  'Say yes to the next odd invitation',
+  'Your patience is nearly finished paying you back',
+  'A small kindness returns to you tenfold this month',
+  'The thing you are dreading takes ten minutes',
+  'You will finish what you started in the spring',
+  'An old friend is thinking of writing to you',
+  'The door you thought was shut was only stiff',
+  'Trust the version of you that woke up early',
+  'Money arrives from a direction you forgot about',
+  'Your name is being spoken kindly in a room you are not in',
+  'The second attempt is the one that works',
+  'A Tuesday will surprise you pleasantly',
+  'What you make this year will outlast you',
+  'Someone younger will thank you for something you said',
+  'Rest is not idleness. Take the afternoon',
+  'You are further along than your notes suggest',
+  'The answer you want is the one you already gave',
+  'A stranger will be unexpectedly useful. Let them',
+  'Your handwriting will decide something',
+  'Good news travels slowly through official channels',
+  'The cat knows. The cat has always known',
+  'You will be paid for something you would have done free',
+  'Begin badly. Begin anyway',
+  'An argument you lost will turn out to be a gift',
+  'The best thing this year was not on the plan',
+  'Someone kept the thing you gave them',
+  'Your next mistake will be a useful one',
+  'A door opens because you knocked twice',
+  'The quiet ones are on your side',
+  'You will remember this year fondly, and sooner than you think',
+  'Something you wrote will be read aloud',
+  'Take the long way home on Thursday',
+  'You are allowed to want the larger thing',
+  'The person you should ask is easier to reach than you assume',
+  'Luck is already in the post',
+  'What felt like a delay was a rerouting',
+  'You will be right about the thing nobody believed',
+  'A small brown envelope contains good news',
+  'Finish the sentence. The rest follows',
+  'Your worst chapter makes your best story',
+  'Someone will offer before you have to ask',
+  'The tide is turning, and it is turning your way',
+  'You will meet a dog who likes you enormously',
+  'Old skills come back faster than you expect',
+  'There is more time than you have been told',
+  'Say the true thing. It lands well'
+];
+
+var used = [];
+function pick(){
+  if (used.length >= fortunes.length) used = [];
+  var i;
+  do { i = Math.floor(Math.random() * fortunes.length); } while (used.indexOf(i) !== -1);
+  used.push(i);
+  return fortunes[i];
+}
+
+function lucky(){
+  var pool = [], out = [];
+  for (var i = 1; i <= 49; i++) pool.push(i);
+  for (var j = 0; j < 6; j++) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  return out.sort(function(a, b){ return a - b; });
+}
+
+var AC = null, muted = false;
+function ac(){ if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); return AC; }
+
+function snap(){
+  if (muted) return;
+  var a = ac(), now = a.currentTime, dur = 0.22;
+  var buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
+  var ch = buf.getChannelData(0);
+  for (var i = 0; i < ch.length; i++){
+    ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / ch.length, 5);
+  }
+  var src = a.createBufferSource(); src.buffer = buf;
+  var hp = a.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
+  var pk = a.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 3200; pk.gain.value = 9;
+  var gn = a.createGain(); gn.gain.value = 0.38;
+  src.connect(hp); hp.connect(pk); pk.connect(gn); gn.connect(a.destination);
+  src.start(now); src.stop(now + dur);
+
+  var o = a.createOscillator(), og = a.createGain();
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(320, now);
+  o.frequency.exponentialRampToValueAtTime(90, now + 0.09);
+  og.gain.setValueAtTime(0.12, now);
+  og.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+  o.connect(og); og.connect(a.destination);
+  o.start(now); o.stop(now + 0.16);
+}
+
+function paperRustle(){
+  if (muted) return;
+  var a = ac(), now = a.currentTime + 0.34, dur = 0.5;
+  var buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
+  var ch = buf.getChannelData(0);
+  for (var i = 0; i < ch.length; i++){
+    var env = Math.sin(Math.PI * i / ch.length);
+    ch[i] = (Math.random() * 2 - 1) * env * (0.4 + 0.6 * Math.random());
+  }
+  var src = a.createBufferSource(); src.buffer = buf;
+  var bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 4200; bp.Q.value = 0.8;
+  var gn = a.createGain(); gn.gain.value = 0.13;
+  src.connect(bp); bp.connect(gn); gn.connect(a.destination);
+  src.start(now); src.stop(now + dur);
+}
+
+var NS = 'http://www.w3.org/2000/svg';
+var crumbs = document.getElementById('crumbs');
+function scatterCrumbs(){
+  crumbs.innerHTML = '';
+  for (var i = 0; i < 14; i++){
+    var c = document.createElementNS(NS, 'ellipse');
+    var ang = Math.PI + Math.random() * Math.PI;
+    var dist = 30 + Math.random() * 90;
+    c.setAttribute('cx', 250 + Math.cos(ang) * dist);
+    c.setAttribute('cy', 168 + Math.abs(Math.sin(ang)) * 22 + Math.random() * 40);
+    c.setAttribute('rx', 2 + Math.random() * 4);
+    c.setAttribute('ry', 1.5 + Math.random() * 3);
+    c.setAttribute('fill', Math.random() < 0.5 ? '#C99444' : '#E8BF72');
+    c.setAttribute('opacity', 0);
+    c.setAttribute('transform', 'rotate(' + (Math.random() * 90) + ' 250 180)');
+    crumbs.appendChild(c);
+    (function(node, delay){
+      setTimeout(function(){
+        node.setAttribute('opacity', 0.75);
+        node.style.transition = 'opacity 1.6s ease';
+        setTimeout(function(){ node.setAttribute('opacity', 0.25); }, 400);
+      }, delay);
+    })(c, 60 + i * 18);
+  }
+}
+
+var stage = document.getElementById('stage');
+var flash = document.getElementById('flash');
+var isOpen = false, working = false;
+
+function crack(){
+  if (working || isOpen) return;
+  working = true;
+  document.getElementById('fortuneText').textContent = pick();
+  document.getElementById('luckyNums').textContent = lucky().join('  \u00b7  ');
+  snap();
+  paperRustle();
+  scatterCrumbs();
+  flash.setAttribute('r', 0);
+  flash.style.transition = 'none';
+  requestAnimationFrame(function(){
+    flash.style.transition = 'r 0.5s ease-out, opacity 0.7s ease-out';
+    flash.setAttribute('r', 130);
+    flash.style.opacity = '0';
+  });
+  stage.classList.add('open');
+  isOpen = true;
+  setTimeout(function(){ working = false; }, 1200);
+}
+
+function reset(cb){
+  stage.classList.remove('open');
+  flash.style.opacity = '1';
+  flash.setAttribute('r', 0);
+  crumbs.innerHTML = '';
+  isOpen = false;
+  setTimeout(cb, 700);
+}
+
+document.getElementById('cookie').addEventListener('click', crack);
+document.getElementById('cookie').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); crack(); }
+});
+document.getElementById('again').addEventListener('click', function(){
+  if (working) return;
+  if (isOpen) { working = true; reset(function(){ working = false; crack(); }); }
+  else crack();
+});
+document.getElementById('mute').addEventListener('click', function(){
+  muted = !muted;
+  this.innerHTML = muted ? '&#9834;' : '&#9835;';
+  this.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
+  this.style.opacity = muted ? '0.5' : '1';
+});
+
+})();
+</script>
+</body>
+</html>
+
