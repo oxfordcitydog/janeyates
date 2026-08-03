@@ -1,1 +1,347 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Inkwell — Jane Yates</title>
+<meta name="description" content="An oracle of ink. Ask a question and watch the answer surface.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #0E0C12;
+    background-image: radial-gradient(ellipse at 50% 30%, #241F2E 0%, #0E0C12 70%);
+    color: #E8DCC0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+    gap: 1.5rem;
+  }
+  h1 {
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    letter-spacing: 0.18em;
+    margin: 0;
+    color: #E3C36A;
+    text-shadow: 0 2px 12px rgba(227,195,106,0.25);
+  }
+  .sub {
+    margin: -0.75rem 0 0;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: #9C8F76;
+    letter-spacing: 0.04em;
+  }
+
+  .frame {
+    position: relative;
+    width: min(560px, 92vw);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 18px 40px rgba(0,0,0,0.7));
+  }
+  .frame svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+
+  #cv {
+    position: absolute;
+    left: 23.2%; top: 23.2%;
+    width: 53.6%; height: 53.6%;
+    border-radius: 50%;
+    background: #14121A;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+  }
+  #ans {
+    position: absolute;
+    left: 26%; top: 26%;
+    width: 48%; height: 48%;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-size: clamp(1rem, 3.2vw, 1.45rem);
+    line-height: 1.4;
+    color: #F4E6C4;
+    text-shadow: 0 0 18px rgba(0,0,0,0.9);
+    opacity: 0.45;
+    transition: opacity 0.9s ease;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .controls { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: min(460px, 92vw); }
+  input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(20,18,26,0.8);
+    border: 1px solid #6B5A2E;
+    border-radius: 3px;
+    color: #E8DCC0;
+    font-family: inherit;
+    font-size: 1.05rem;
+    text-align: center;
+  }
+  input::placeholder { color: #7A6E58; font-style: italic; }
+  input:focus { outline: none; border-color: #C9A44C; box-shadow: 0 0 0 3px rgba(201,164,76,0.15); }
+
+  button {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    padding: 0.7rem 1.8rem;
+    color: #2A2112;
+    background: linear-gradient(180deg, #F0DCA0 0%, #C9A44C 45%, #9A7A2E 100%);
+    border: 1px solid #6B5A2E;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #574518, 0 4px 10px rgba(0,0,0,0.5);
+  }
+  button:hover { background: linear-gradient(180deg, #F7E7B8 0%, #D6B45E 45%, #A98836 100%); }
+  button:active { transform: translateY(2px); box-shadow: 0 0 0 #574518, 0 2px 6px rgba(0,0,0,0.5); }
+  button:focus-visible { outline: 2px solid #F0DCA0; outline-offset: 3px; }
+
+  footer { margin-top: 1rem; font-size: 0.9rem; color: #6E6455; letter-spacing: 0.06em; }
+  footer a { color: #9C8F76; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<h1>The Inkwell</h1>
+<p class="sub">Ask, and let the ink decide</p>
+
+<div class="frame">
+  <canvas id="cv" role="button" tabindex="0" aria-label="Consult the inkwell"></canvas>
+  <div id="ans">Touch the ink</div>
+
+  <svg viewBox="0 0 560 560" aria-hidden="true">
+    <defs>
+      <linearGradient id="gold" x1="0" y1="0" x2="0.7" y2="1">
+        <stop offset="0%" stop-color="#FBEECB"/>
+        <stop offset="22%" stop-color="#E3C36A"/>
+        <stop offset="52%" stop-color="#B8912F"/>
+        <stop offset="78%" stop-color="#7C5E1E"/>
+        <stop offset="100%" stop-color="#C9A44C"/>
+      </linearGradient>
+      <linearGradient id="goldSoft" x1="0.2" y1="0" x2="0.8" y2="1">
+        <stop offset="0%" stop-color="#F7E3AE"/>
+        <stop offset="50%" stop-color="#C09632"/>
+        <stop offset="100%" stop-color="#6B5020"/>
+      </linearGradient>
+      <radialGradient id="hollow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="82%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.75"/>
+      </radialGradient>
+      <mask id="ring">
+        <rect width="560" height="560" fill="#fff"/>
+        <circle cx="280" cy="280" r="150" fill="#000"/>
+      </mask>
+    </defs>
+
+    <g mask="url(#ring)">
+      <circle cx="280" cy="280" r="268" fill="url(#gold)"/>
+      <circle cx="280" cy="280" r="268" fill="none" stroke="#4A3712" stroke-width="3"/>
+      <circle cx="280" cy="280" r="252" fill="none" stroke="#5C4718" stroke-width="2" opacity="0.7"/>
+
+      <g id="gadroons"></g>
+
+      <circle cx="280" cy="280" r="236" fill="none" stroke="#3E2E0E" stroke-width="7" opacity="0.55"/>
+      <circle cx="280" cy="280" r="232" fill="none" stroke="#F7E3AE" stroke-width="1.5" opacity="0.6"/>
+
+      <g id="leaves"></g>
+
+      <circle cx="280" cy="280" r="176" fill="none" stroke="#3E2E0E" stroke-width="6" opacity="0.5"/>
+      <g id="beads"></g>
+      <circle cx="280" cy="280" r="156" fill="none" stroke="url(#goldSoft)" stroke-width="12"/>
+      <circle cx="280" cy="280" r="150" fill="none" stroke="#2A1F0A" stroke-width="4"/>
+      <circle cx="280" cy="280" r="163" fill="none" stroke="#FBEECB" stroke-width="1" opacity="0.5"/>
+
+      <g id="cartouches"></g>
+    </g>
+
+    <circle cx="280" cy="280" r="150" fill="url(#hollow)"/>
+  </svg>
+</div>
+
+<div class="controls">
+  <label class="sr-only" for="q">Your question</label>
+  <input id="q" type="text" placeholder="Ask the ink something" autocomplete="off">
+  <button id="go">Consult the ink</button>
+</div>
+
+<footer>Jane Yates &middot; <a href="https://github.com/oxfordcitydog/janeyates">source</a></footer>
+
+<script>
+(function(){
+
+  var svgns = 'http://www.w3.org/2000/svg';
+  function el(name, attrs){
+    var n = document.createElementNS(svgns, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  var gad = document.getElementById('gadroons');
+  for (var i = 0; i < 56; i++){
+    var g = el('g', { transform: 'rotate(' + (i * 360 / 56) + ' 280 280)' });
+    g.appendChild(el('ellipse', { cx: 280, cy: 36, rx: 9, ry: 15, fill: 'url(#goldSoft)', stroke: '#4A3712', 'stroke-width': 1 }));
+    g.appendChild(el('ellipse', { cx: 278, cy: 33, rx: 3.5, ry: 6, fill: '#FBEECB', opacity: 0.55 }));
+    gad.appendChild(g);
+  }
+
+  var leafPath = 'M0,0 C -15,-14 -22,-38 -13,-62 C -5,-48 -2,-38 0,-30 C 2,-38 5,-48 13,-62 C 22,-38 15,-14 0,0 Z';
+  var leaves = document.getElementById('leaves');
+  for (var j = 0; j < 20; j++){
+    var lg = el('g', { transform: 'rotate(' + (j * 18) + ' 280 280) translate(280 224)' });
+    lg.appendChild(el('path', { d: leafPath, fill: 'url(#goldSoft)', stroke: '#4A3712', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }));
+    lg.appendChild(el('path', { d: 'M0,-4 L0,-52', fill: 'none', stroke: '#FBEECB', 'stroke-width': 1.4, opacity: 0.55 }));
+    lg.appendChild(el('path', { d: 'M0,-20 L-9,-34 M0,-20 L9,-34 M0,-34 L-7,-46 M0,-34 L7,-46', fill: 'none', stroke: '#5C4718', 'stroke-width': 0.9, opacity: 0.65 }));
+    leaves.appendChild(lg);
+  }
+
+  var beads = document.getElementById('beads');
+  for (var b = 0; b < 72; b++){
+    var a = b * Math.PI * 2 / 72;
+    var bx = 280 + Math.cos(a) * 166;
+    var by = 280 + Math.sin(a) * 166;
+    beads.appendChild(el('circle', { cx: bx, cy: by, r: 4.2, fill: 'url(#goldSoft)', stroke: '#4A3712', 'stroke-width': 0.8 }));
+    beads.appendChild(el('circle', { cx: bx - 1.2, cy: by - 1.2, r: 1.5, fill: '#FBEECB', opacity: 0.6 }));
+  }
+
+  var cart = document.getElementById('cartouches');
+  var shield = 'M0,-30 C 20,-30 30,-16 30,0 C 30,18 16,30 0,38 C -16,30 -30,18 -30,0 C -30,-16 -20,-30 0,-30 Z';
+  var scroll = 'M-44,4 C -34,-14 -18,-18 -6,-8 M44,4 C 34,-14 18,-18 6,-8';
+  for (var c = 0; c < 4; c++){
+    var cg = el('g', { transform: 'rotate(' + (45 + c * 90) + ' 280 280) translate(280 30)' });
+    cg.appendChild(el('path', { d: scroll, fill: 'none', stroke: 'url(#goldSoft)', 'stroke-width': 7, 'stroke-linecap': 'round' }));
+    cg.appendChild(el('path', { d: shield, fill: 'url(#gold)', stroke: '#4A3712', 'stroke-width': 1.5 }));
+    cg.appendChild(el('circle', { cx: 0, cy: 2, r: 11, fill: 'none', stroke: '#4A3712', 'stroke-width': 1.4 }));
+    cg.appendChild(el('circle', { cx: 0, cy: 2, r: 5, fill: '#7C5E1E' }));
+    cg.appendChild(el('path', { d: 'M0,-26 C 8,-14 8,-2 0,8 C -8,-2 -8,-14 0,-26 Z', fill: '#FBEECB', opacity: 0.35 }));
+    cart.appendChild(cg);
+  }
+
+  var answers = [
+    'It is already written',
+    'The ink says yes',
+    'Not yet, but soon',
+    'The ink refuses to settle',
+    'Ask again at dusk',
+    'Certainly, and twice over',
+    'The signs are poor',
+    'Patience. It is coming',
+    'Yes, but not as you expect',
+    'The ink has run dry on this',
+    'Without question',
+    'Wait for the second post',
+    'Someone has already decided',
+    'Turn the question over',
+    'The answer is no, and you knew it',
+    'A door, but not this one',
+    'Trust the first thought you had',
+    'The ink laughs. Take that as a yes',
+    'Not while you are watching',
+    'It depends on Thursday',
+    'You are asking the wrong person',
+    'Yes, at a price',
+    'The ink is uneasy about this',
+    'Begin, and the way will show'
+  ];
+
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var ans = document.getElementById('ans');
+  var parts = [], busy = false, t = 0, S = 300;
+
+  function resize(){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    S = cv.clientWidth;
+    cv.width = S * dpr;
+    cv.height = S * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function spawn(n, burst){
+    for (var i = 0; i < n; i++){
+      var a = Math.random() * Math.PI * 2;
+      var sp = burst ? (0.5 + Math.random() * 2.1) : (0.05 + Math.random() * 0.25);
+      parts.push({
+        x: S / 2 + (Math.random() - 0.5) * 16,
+        y: S / 2 + (Math.random() - 0.5) * 16,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        r: 6 + Math.random() * 18,
+        life: 1,
+        dec: 0.004 + Math.random() * 0.008,
+        seed: Math.random() * 100
+      });
+    }
+  }
+
+  function frame(){
+    t += 0.01;
+    ctx.fillStyle = 'rgba(20,18,26,0.09)';
+    ctx.fillRect(0, 0, S, S);
+    ctx.globalCompositeOperation = 'lighter';
+    for (var i = parts.length - 1; i >= 0; i--){
+      var p = parts[i];
+      p.vx += Math.sin(p.y * 0.02 + t + p.seed) * 0.035;
+      p.vy += Math.cos(p.x * 0.02 + t + p.seed) * 0.035;
+      p.vx *= 0.972; p.vy *= 0.972;
+      p.x += p.vx; p.y += p.vy;
+      p.r += 0.22 * (S / 300);
+      p.life -= p.dec;
+      var d = Math.sqrt((p.x - S / 2) * (p.x - S / 2) + (p.y - S / 2) * (p.y - S / 2));
+      if (p.life <= 0 || d > S / 2){ parts.splice(i, 1); continue; }
+      var alpha = p.life * 0.16;
+      var g2 = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      g2.addColorStop(0, 'rgba(126,138,176,' + alpha + ')');
+      g2.addColorStop(0.5, 'rgba(72,80,116,' + (alpha * 0.5) + ')');
+      g2.addColorStop(1, 'rgba(72,80,116,0)');
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    if (parts.length < 26) spawn(1, false);
+    requestAnimationFrame(frame);
+  }
+
+  function consult(){
+    if (busy) return;
+    busy = true;
+    ans.style.opacity = '0';
+    spawn(80, true);
+    setTimeout(function(){ spawn(45, true); }, 260);
+    setTimeout(function(){
+      ans.textContent = answers[Math.floor(Math.random() * answers.length)];
+      ans.style.opacity = '1';
+      busy = false;
+    }, 1900);
+  }
+
+  cv.addEventListener('click', consult);
+  cv.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); consult(); }
+  });
+  document.getElementById('go').addEventListener('click', consult);
+  document.getElementById('q').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') consult();
+  });
+
+  spawn(20, false);
+  frame();
+
+})();
+</script>
+</body>
+</html>
