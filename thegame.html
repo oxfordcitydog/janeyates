@@ -1,1 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate vs Mermaid Maze</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Dark blue background for underwater/night vibe */
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling on mobile */
+        }
 
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 95vw;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Character Selection Styles */
+        .character-select {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .char-btn {
+            background: #334155;
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .char-btn:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .char-btn.selected {
+            border-color: #3b82f6; /* Blue border for selection */
+            background: #1e40af;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        .char-btn i {
+            font-size: 2.5rem;
+        }
+
+        /* Maze Grid Styles */
+        #maze-grid {
+            display: grid;
+            /* 15x15 grid */
+            grid-template-columns: repeat(15, min(5vw, 30px));
+            grid-template-rows: repeat(15, min(5vw, 30px));
+            gap: 1px;
+            background-color: #1e293b; /* Wall color */
+            border: 4px solid #475569;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cell {
+            background-color: #0f172a; /* Path color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: min(3.5vw, 20px);
+            position: relative;
+        }
+
+        .cell.wall {
+            background-color: #334155;
+            /* Add a subtle texture or pattern to walls if desired */
+            background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b), 
+                              linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b);
+            background-size: 10px 10px;
+            background-position: 0 0, 5px 5px;
+        }
+
+        /* Entrance and Exit Indicators */
+        .cell.entrance::after {
+            content: 'START';
+            position: absolute;
+            top: -25px;
+            font-size: 0.6rem;
+            color: #4ade80;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .mobile-controls {
+                display: none; /* Hide on larger screens where keyboard is primary */
+            }
+        }
+
+        .control-btn {
+            background: #334155;
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            user-select: none;
+        }
+        
+        .control-btn:active {
+            background: #475569;
+            transform: translateY(2px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Empty grid cells for layout */
+        .control-empty { visibility: hidden; }
+
+        /* Modal Styles */
+        #message-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 2px solid #fbbf24;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+        }
+        
+        .win-icon {
+            font-size: 4rem;
+            color: #f59e0b;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .text-pirate { color: #ef4444; } /* Red for pirate */
+        .text-mermaid { color: #06b6d4; } /* Cyan for mermaid */
+        .text-treasure { color: #f59e0b; } /* Amber for treasure */
+
+        @keyframes openChest {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(-5deg); }
+            100% { transform: scale(1.1) rotate(0deg); }
+        }
+        
+        .chest-opening {
+            animation: openChest 0.5s forwards;
+        }
+
+        .coin {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #fbbf24;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 5px #fbbf24;
+        }
+
+        @keyframes spillCoin {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0.5); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1 class="text-3xl md:text-5xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+            Quest for the Deep Sea Treasure
+        </h1>
+
+        <!-- Character Selection Screen -->
+        <div id="setup-screen" class="flex flex-col items-center">
+            <h2 class="text-xl mb-4">Choose Your Hero</h2>
+            <div class="character-select">
+                <button id="btn-pirate" class="char-btn" onclick="selectCharacter('pirate')">
+                    <i class="fa-solid fa-skull-crossbones text-pirate"></i>
+                    <span>Pirate</span>
+                </button>
+                <button id="btn-mermaid" class="char-btn" onclick="selectCharacter('mermaid')">
+                    <!-- Using a generic icon as FontAwesome free doesn't have a specific mermaid, 
+                         swimmer or fish is a good proxy, let's use a stylized user for now -->
+                    <i class="fa-solid fa-person-swimming text-mermaid"></i>
+                    <span>Mermaid</span>
+                </button>
+            </div>
+            <button id="btn-start" class="hidden mt-4 px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold rounded-full shadow-lg transform transition hover:scale-105" onclick="startGame()">
+                Start Quest
+            </button>
+        </div>
+
+        <!-- Maze Game Screen -->
+        <div id="maze-screen" class="hidden flex-col items-center">
+            <div class="mb-4 w-full text-center">
+                <div class="text-xl font-bold text-emerald-400 mb-2">
+                    <span id="current-char-icon" class="mr-2"></span> Move using Arrow Keys!
+                </div>
+                <button onclick="resetGame()" class="text-sm bg-red-900/50 hover:bg-red-800 text-white px-4 py-2 rounded">Resign / Pick New Character</button>
+            </div>
+            
+            <div id="maze-grid"></div>
+
+            <!-- Mobile Controls -->
+            <div class="mobile-controls">
+                <div class="control-empty"></div>
+                <button class="control-btn" id="btn-up"><i class="fa-solid fa-arrow-up"></i></button>
+                <div class="control-empty"></div>
+                
+                <button class="control-btn" id="btn-left"><i class="fa-solid fa-arrow-left"></i></button>
+                <button class="control-btn" id="btn-down"><i class="fa-solid fa-arrow-down"></i></button>
+                <button class="control-btn" id="btn-right"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Message Box (replaces alert) -->
+    <div id="message-modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-gem win-icon"></i>
+            <h2 class="text-3xl font-bold mb-4 text-white">Treasure Found!</h2>
+            <p id="win-message" class="text-lg text-gray-300 mb-6"></p>
+            <button onclick="resetGame()" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded shadow-lg transition">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let selectedCharacter = null;
+        let isGameRunning = false;
+        
+        // Coordinates (row, col)
+        let playerPos = { r: 0, c: 0 };
+        const treasurePos = { r: 7, c: 7 }; // Middle of 15x15 grid
+        let coins = [];
+        
+        // Character Icons (FontAwesome HTML)
+        const icons = {
+            pirate: '<i class="fa-solid fa-skull-crossbones text-pirate"></i>',
+            mermaid: '<i class="fa-solid fa-person-swimming text-mermaid"></i>',
+            treasure: '<i class="fa-solid fa-box text-treasure"></i>', // Changed to closed box initially
+            treasureOpen: '<i class="fa-solid fa-box-open text-treasure chest-opening"></i>' // Open box
+        };
+
+        // Maze Layout (15x15)
+        // 0 = path, 1 = wall
+        // Designed to have an entrance at top left (0,0) and a guaranteed path to center (7,7)
+        const mazeMap = [
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Row 0 (Entrance at 0,0)
+            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+            [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0], // Row 7 (Treasure at 7,7)
+            [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]  // Closed bottom
+        ];
+
+        function selectCharacter(char) {
+            selectedCharacter = char;
+            
+            // Update UI
+            document.getElementById('btn-pirate').classList.remove('selected');
+            document.getElementById('btn-mermaid').classList.remove('selected');
+            
+            document.getElementById(`btn-${char}`).classList.add('selected');
+            
+            // Show start button
+            document.getElementById('btn-start').classList.remove('hidden');
+        }
+
+        function startGame() {
+            if (!selectedCharacter) return;
+            
+            // Hide setup, show game
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('maze-screen').classList.remove('hidden');
+            document.getElementById('maze-screen').classList.add('flex');
+            
+            // Set current character icon in header
+            document.getElementById('current-char-icon').innerHTML = icons[selectedCharacter];
+            
+            isGameRunning = true;
+            playerPos = { r: 0, c: 0 }; // Reset position to entrance
+            
+            renderMaze();
+        }
+
+        function renderMaze() {
+            const grid = document.getElementById('maze-grid');
+            grid.innerHTML = ''; // Clear existing
+            
+            for (let r = 0; r < mazeMap.length; r++) {
+                for (let c = 0; c < mazeMap[r].length; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+                    
+                    if (mazeMap[r][c] === 1) {
+                        cell.classList.add('wall');
+                    } else {
+                        // Mark entrance visually
+                        if (r === 0 && c === 0) cell.classList.add('entrance');
+                        
+                        // Place entities
+                        if (r === treasurePos.r && c === treasurePos.c) {
+                            cell.innerHTML = icons.treasure;
+                        }
+                        if (r === playerPos.r && c === playerPos.c) {
+                            cell.innerHTML = icons[selectedCharacter];
+                        }
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function movePlayer(dr, dc) {
+            if (!isGameRunning) return;
+
+            const newR = playerPos.r + dr;
+            const newC = playerPos.c + dc;
+
+            // Check bounds
+            if (newR < 0 || newR >= mazeMap.length || newC < 0 || newC >= mazeMap[0].length) {
+                return; // Hit boundary
+            }
+
+            // Check wall collision
+            if (mazeMap[newR][newC] === 1) {
+                // Visual feedback for hitting a wall could be added here
+                return; 
+            }
+
+            // Move is valid
+            // Clear old position
+            const oldCell = document.getElementById(`cell-${playerPos.r}-${playerPos.c}`);
+            if (oldCell) oldCell.innerHTML = ''; // Remove player icon
+
+            // Update position
+            playerPos.r = newR;
+            playerPos.c = newC;
+
+            const newCell = document.getElementById(`cell-${playerPos.r}-${playerPos.c}`);
+            if (newCell) {
+                 // Check win condition BEFORE updating icon, so the treasure isn't overwritten immediately
+                if (playerPos.r === treasurePos.r && playerPos.c === treasurePos.c) {
+                    // Update cell to show open treasure alongside player
+                    newCell.innerHTML = icons.treasureOpen;
+                    createCoinSpill(newCell);
+                    // Short delay before showing modal to allow animation to play
+                    setTimeout(handleWin, 1500); 
+                } else {
+                    newCell.innerHTML = icons[selectedCharacter];
+                }
+            }
+        }
+
+        function createCoinSpill(cell) {
+            const rect = cell.getBoundingClientRect();
+            const gridRect = document.getElementById('maze-grid').getBoundingClientRect();
+            
+            // Calculate center of the cell relative to the grid
+            const centerX = rect.left - gridRect.left + (rect.width / 2);
+            const centerY = rect.top - gridRect.top + (rect.height / 2);
+
+            for (let i = 0; i < 20; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin');
+                
+                // Randomize trajectory
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 30 + Math.random() * 50;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                coin.style.left = `${centerX}px`;
+                coin.style.top = `${centerY}px`;
+                coin.style.setProperty('--tx', `${tx}px`);
+                coin.style.setProperty('--ty', `${ty}px`);
+                
+                // Randomize animation duration slightly
+                const duration = 0.5 + Math.random() * 0.5;
+                coin.style.animation = `spillCoin ${duration}s ease-out forwards`;
+                
+                document.getElementById('maze-grid').appendChild(coin);
+                coins.push(coin);
+            }
+        }
+
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            // Prevent default scrolling when using arrows
+            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                e.preventDefault();
+            }
+            
+            switch(e.key) {
+                case 'ArrowUp': movePlayer(-1, 0); break;
+                case 'ArrowDown': movePlayer(1, 0); break;
+                case 'ArrowLeft': movePlayer(0, -1); break;
+                case 'ArrowRight': movePlayer(0, 1); break;
+            }
+        });
+
+        // Mobile button controls
+        // Using touchstart for faster response on mobile, fallback to click
+        const addControl = (id, dr, dc) => {
+            const btn = document.getElementById(id);
+            if(btn) {
+                // Handle both touch and click, prevent double firing
+                const handler = (e) => {
+                    e.preventDefault();
+                    movePlayer(dr, dc);
+                };
+                btn.addEventListener('mousedown', handler);
+                btn.addEventListener('touchstart', handler, {passive: false});
+            }
+        };
+
+        addControl('btn-up', -1, 0);
+        addControl('btn-down', 1, 0);
+        addControl('btn-left', 0, -1);
+        addControl('btn-right', 0, 1);
+
+
+        function handleWin() {
+            isGameRunning = false;
+            const modal = document.getElementById('message-modal');
+            const msg = document.getElementById('win-message');
+            
+            const characterName = selectedCharacter.charAt(0).toUpperCase() + selectedCharacter.slice(1);
+            msg.textContent = `The brave ${characterName} has navigated the deep and claimed the treasure!`;
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        function resetGame() {
+            // Hide modal if open
+            document.getElementById('message-modal').style.display = 'none';
+            
+            coins.forEach(coin => coin.remove());
+            coins = [];
+
+            // Reset state
+            isGameRunning = false;
+            selectedCharacter = null;
+            
+            // Switch screens
+            document.getElementById('maze-screen').classList.add('hidden');
+            document.getElementById('maze-screen').classList.remove('flex');
+            
+            document.getElementById('setup-screen').classList.remove('hidden');
+            
+            // Reset selection UI
+            document.getElementById('btn-pirate').classList.remove('selected');
+            document.getElementById('btn-mermaid').classList.remove('selected');
+            document.getElementById('btn-start').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
